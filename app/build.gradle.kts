@@ -34,20 +34,20 @@ android {
         jvmTarget = "11"
     }
 
-    externalNativeBuild {
+    /*externalNativeBuild {
         cmake {
             path = "src/main/cpp/CMakeLists.txt"
             version = "3.22.1"
         }
         ndkVersion = '25.1.8937393'
-    }
+    }*/
 
 
-    sourceSets {
+    /*sourceSets {
         main {
             jniLibs.srcDirs = 'src/main/libs'
         }
-    }
+    }*/
 }
 
 
@@ -56,8 +56,11 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.support.annotations)
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    //implementation(libs.support.annotations)
+    //implementation(libs.support.v4)
+    //implementation(libs.androidx.activity)
+    //implementation(libs.androidx.constraintlayout)
+    //implementation 'androidx.appcompat:appcompat:1.6.1'
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
