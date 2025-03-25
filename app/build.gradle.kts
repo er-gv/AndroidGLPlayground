@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -34,20 +36,7 @@ android {
         jvmTarget = "11"
     }
 
-    /*externalNativeBuild {
-        cmake {
-            path = "src/main/cpp/CMakeLists.txt"
-            version = "3.22.1"
-        }
-        ndkVersion = '25.1.8937393'
-    }*/
 
-
-    /*sourceSets {
-        main {
-            jniLibs.srcDirs = 'src/main/libs'
-        }
-    }*/
 }
 
 
