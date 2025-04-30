@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "GLSandbox"
+rootProject.name = "Quantized Shapes"
 include(":app")

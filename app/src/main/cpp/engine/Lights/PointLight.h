@@ -1,0 +1,36 @@
+//
+// Created by Erez on 15/05/20.
+//
+
+#pragma once
+
+
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include "Material.h"
+#include "graphics/transform.h"
+#include <glm/vec3.hpp>
+
+class PointLight {
+
+
+    Transform t;
+    glm::vec3 mColor;
+    float mSize;
+    Material* mat;
+public:
+    PointLight();
+    ~PointLight();
+
+    void render(const glm::mat4& view, const glm::mat4& projection);
+    bool setup();
+
+    void setColor(const glm::vec3 &color);
+
+    void setPointSize(const float s);
+    void setTransform(Transform& other);
+    void updatePosition(long time);
+    glm::vec4 position();
+};
+
