@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.ergv.glesandbox"
+    namespace = "com.ergv.gles.playground"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.ergv.glesandbox"
+        applicationId = "com.ergv.gles.playground"
         minSdk = 28
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "25.5.20"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {

@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ergv.gles.playground.R
-import com.ergv.gles.playground.theam.ui.GlesPlaygroundTheme
+import com.ergv.gles.playground.theme.ui.GlesPlaygroundTheme
 
 
 class MainMenuActivity : ComponentActivity() {
