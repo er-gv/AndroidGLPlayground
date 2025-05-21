@@ -12,6 +12,7 @@ class QuantizedPolyhedronsSceneLib: AbstractJNILib() {
 
     external fun nativeInit(width: Int, height: Int)
     external fun nativeStep()
+    external fun nativeDestroy()
 
     public override fun init(width: Int, height: Int){
         nativeInit(width, height)
@@ -19,6 +20,10 @@ class QuantizedPolyhedronsSceneLib: AbstractJNILib() {
 
     public override fun step(){
         nativeStep()
+    }
+
+    public override fun destroy(){
+        nativeDestroy();
     }
 
 
