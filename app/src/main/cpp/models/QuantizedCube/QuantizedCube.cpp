@@ -14,6 +14,7 @@
 QuantizedCube::~QuantizedCube(){
     glDeleteProgram(mProgram);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 }
 
 bool QuantizedCube::init(){
@@ -134,15 +135,7 @@ void QuantizedCube::render() const {
         glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, (void *) (i * 4 * sizeof(unsigned)));
         checkGlError("glDrawElement", LOG_TAG);
     }
-    glLineWidth(2.0f);
-
-    for( unsigned i=0; i<6; ++i) {
-        glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, (void *) (i * 4 * sizeof(unsigned)));
-        checkGlError("glDrawElement", LOG_TAG);
-    }
-    glVertexAttribPointer(aColorHandle, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
-    checkGlError("glVertexAttribPointer", LOG_TAG);
-    glEnableVertexAttribArray(aColorHandle);
+    glUseProgram(0);
 
 }
 

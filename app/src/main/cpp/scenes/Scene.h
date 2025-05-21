@@ -31,7 +31,7 @@ public:
     ~Scene();
     explicit Scene(
             const Boundaries& boundaries= Boundaries{-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f},
-            const glm::vec3 clearColor= glm::vec3{0.0f, 0.0f, 0.0f}
+            glm::vec3 clearColor= glm::vec3{0.0f, 0.0f, 0.0f}
             );
 
     Scene(GLfloat left, GLfloat right, GLfloat top, GLfloat bottom, GLfloat near, GLfloat far);
@@ -44,7 +44,7 @@ public:
     void setClearColor(const glm::vec3 &color);
     void setBoundaries(const Boundaries &new_boundaries);
     void render();
-
+    void reset();
 
     void addDirectionalLight(const DirectionalLight& light);
     //void addPointLight(const PointLight& light);

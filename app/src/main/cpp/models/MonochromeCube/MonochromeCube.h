@@ -30,12 +30,14 @@ private:
     //GLint uMatMVPHandle{0};
     //GLint uTexHandle{0};
 
-    GLuint vbo;
+    GLuint vbo{0};
+    GLuint ebo{0};
     bool initVBO();
 
 
 public:
     MonochromeCube() = default;
+    ~MonochromeCube() override;
     bool init() override;
     void updateState() override;
     void render() const override;

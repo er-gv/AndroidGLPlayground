@@ -94,6 +94,8 @@ GLuint ShadersBuilder::linkShaders(GLuint vertexShader, GLuint  fragmentShader){
         glDeleteProgram(glProgram);
         glProgram = 0;
     }
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
     return glProgram;
 }
 

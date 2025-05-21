@@ -64,9 +64,10 @@ void Scene::addDirectionalLight(const DirectionalLight& light){
 void Scene::addModel(Model* pModel){
     models.push_back(pModel);
 }
-//void Scene::addCamera(const Camera& camera){
-    //activeCamera =camera;
-//}
+
+void Scene::reset(){
+    models.clear();
+}
 
 void Scene::render(){
     glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);

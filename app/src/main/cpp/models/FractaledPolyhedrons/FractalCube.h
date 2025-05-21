@@ -20,6 +20,7 @@ class FractalCube: public Model {
     GLuint aPositionHandle{0};
     GLint uColorHandle{-6};
     GLint uFaceNormalHandle{-6};
+    GLint lightDirectionHandle{-7};
     GLint uMatMVPHandle{-6};
 
     GLuint VBO{0};
@@ -27,13 +28,13 @@ class FractalCube: public Model {
 
 
     float m_rotationAngle{0};
-    float m_delta_angle{0.2f};
+    float m_delta_angle{0.8f};
     glm::mat4 mvp = glm::mat4(1.0f);
 
-    const glm::vec3 triangleColors[4]{glm::vec3{0xfc/255.0f,0x6a/255.0f, 0x03/255.0f},
-                                       glm::vec3{0xed/255.0f,0x82/255.0f, 0x0e/255.0f},
-                                       glm::vec3{0xfd/255.0f,0xa1/255.0f, 0x72/255.0f},
-                                       glm::vec3{0xbe/255.0f,0x55/255.0f, 0x04/255.0f}
+    const glm::ivec3 triangleColors[4]{glm::ivec3{0xfc, 0x6a, 0x03},
+                                       glm::ivec3{0xed,0x82, 0x0e},
+                                       glm::ivec3{0xfd,0xa1, 0x72},
+                                       glm::ivec3{0xbe,0x55, 0x04}
     };
 
     const glm::vec3 normals[4]{
@@ -48,7 +49,7 @@ class FractalCube: public Model {
     bool initShader();
 
 public:
-    ~FractalCube() override = default;
+    ~FractalCube() override;
     FractalCube()=default;
     virtual bool init();
     virtual void render() const;
