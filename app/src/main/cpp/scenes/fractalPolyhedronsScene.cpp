@@ -15,12 +15,12 @@ static Scene scene;
 
 bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@FractalPolyhedronsScene::setupGraphics(%d, %d)", w, h);
-
+    scene.reset();
     auto* fractalCube = new FractalCube();
 
     fractalCube->init();
     scene.addModel(fractalCube);
-    scene.setClearColor(glm::vec3{0.831f});
+    scene.setClearColor(glm::vec3{0.15f});
     scene.addDirectionalLight(DirectionalLight{glm::vec3{0.f, -1.f, -1.f}, glm::vec3{0.f, 0.8f, 0.2f}});
     scene.setViewPort(w, h);
     return true;
@@ -55,5 +55,13 @@ extern "C" {
     JNIEXPORT void JNICALL Java_com_ergv_gles_playground_FractalPolyhedronsSceneLib_nativeStep(
             JNIEnv * env, jobject obj) {
         scene.render();
+    }
+
+
+    JNIEXPORT void JNICALL
+    Java_com_ergv_gles_playground_MonochromaticModels_nativeDestroy(JNIEnv* env, jobject obj) {
+        log_info(LOG_TAG, "@GL2JNILib_destroy");
+        scene.reset();
+        //quantizedCube.renderFrame();
     }
 }

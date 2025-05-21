@@ -32,7 +32,7 @@ static Scene scene;
 
 bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@monochromaticColorsScene::setupGraphics(%d, %d)", w, h);
-
+    scene.reset();
     auto* monochromeCube = new MonochromeCube();
     monochromeCube->init();
     scene.addModel(monochromeCube);
@@ -63,6 +63,13 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_ergv_gles_playground_MonochromaticModels_nativeStep(JNIEnv* env, jobject obj) {
     scene.render();
     //quantizedCube.tick();
+    //quantizedCube.renderFrame();
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_ergv_gles_playground_MonochromaticModels_nativeDestroy(JNIEnv* env, jobject obj) {
+    log_info(LOG_TAG, "@GL2JNILib_destroy");
+    scene.reset();
     //quantizedCube.renderFrame();
 }
 
