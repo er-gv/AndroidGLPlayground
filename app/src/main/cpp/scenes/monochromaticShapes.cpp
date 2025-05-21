@@ -36,7 +36,7 @@ bool setupGraphics(int w, int h) {
     auto* monochromeCube = new MonochromeCube();
     monochromeCube->init();
     scene.addModel(monochromeCube);
-    scene.setClearColor(glm::vec3(0.0f, 0.0f, 0.0f));
+    scene.setClearColor(glm::vec3(0.0f, 0.3f, 0.0f));
     scene.setViewPort(w, h);
     return true;
 }
