@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">GLSandbox</string>
-    <string name="canadian_flag">canadian_flag</string>
-    <string name="button_text">button_text</string>
-    <string name="image_description">image_description</string>
+    <string name="app_name">OpenGL-ES Playground</string>
+    <string name="lbl_main_menu">Main Menu</string>
+    <string name="lbl_gl_scene">OpenGL ES Scene</string>
 </resources>
