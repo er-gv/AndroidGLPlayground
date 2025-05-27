@@ -1,8 +1,8 @@
 package com.ergv.gles.playground
 
-class ChessAndBricksScene : AbstractJNILib() {
+class ChessAndBricksSceneLib : AbstractJNILib() {
     init {
-        System.loadLibrary("quantizedPolyhedronsScene")
+        System.loadLibrary("chessAndBricksScene")
     }
 
     /**

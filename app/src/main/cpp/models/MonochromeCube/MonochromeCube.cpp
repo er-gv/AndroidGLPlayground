@@ -14,12 +14,13 @@
 #include "../../logger.h"
 #define LOG_TAG "MONOCHROMATIC_CUBE"
 
-MonochromeCube::~MonochromeCube(){
+ChessCube::~ChessCube(){
     glDeleteBuffers(1, &vbo);
     //glDeleteBuffers(1, &EBO);
     glDeleteProgram(mProgram);
 }
-bool MonochromeCube::init(){
+
+bool ChessCube::init(){
     const auto vertexShaderSrc ="shaders/vertex/monochrome_face_vertex.glsl";
     const auto fragmentShaderSrc ="shaders/fragment/monochrome_face_fragment.glsl";
     mProgram = ShadersBuilder::buildGLProgram(vertexShaderSrc,
@@ -47,7 +48,7 @@ bool MonochromeCube::init(){
 
 }
 
-bool MonochromeCube::initVBO() {
+bool ChessCube::initVBO() {
 
     const GLfloat vertices[]{
 
@@ -91,7 +92,7 @@ bool MonochromeCube::initVBO() {
 
     return true;
 }
-void MonochromeCube::render() const {
+void ChessCube::render() const {
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -103,13 +104,13 @@ void MonochromeCube::render() const {
 
 
     glUseProgram(mProgram);
-    glm::mat4 mvp = glm::mat4(1.0f);
-    mvp = glm::scale(mvp, glm::vec3{0.35f});
-    mvp = glm::rotate(mvp, glm::radians((float)m_rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-    mvp = glm::translate(mvp, glm::vec3(1.60f, 0.2f, 0.0f));
+    //glm::mat4 mvp = glm::mat4(1.0f);
+    //mvp = glm::scale(mvp, glm::vec3{0.35f});
+    //mvp = glm::rotate(mvp, glm::radians((float)m_rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+    //mvp = glm::translate(mvp, glm::vec3(1.60f, 0.2f, 0.0f));
 
 
-    glUniformMatrix4fv(u_matMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+    glUniformMatrix4fv(u_matMVP, 1, GL_FALSE, glm::value_ptr(modelview));
 
     const glm::vec3 colors[]{
         glm::vec3{0.9f, 0.2f, 0.3f},
@@ -139,15 +140,14 @@ void MonochromeCube::render() const {
 
 }
 
-void MonochromeCube::updateState() {
-
-
-    if (grey > 1.0f || grey < 0.0f) {
-        sign = -sign;
-    }
-    grey += sign * 0.01f;
+void ChessCube::updateState() {
 
     m_rotationAngle +=1.2;
     if(m_rotationAngle > 360.0f)
         m_rotationAngle -= 360.0f;
+    reset_modelview();
+    scale(glm::vec3{0.35f});
+    rotate(glm::vec3{0.0f, 1.0f, 0.0f}, glm::radians(m_rotationAngle));
+    translate(glm::vec3(1.60f, 0.4f, 0.0f));
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
 }

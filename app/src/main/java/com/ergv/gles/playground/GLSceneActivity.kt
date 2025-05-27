@@ -29,4 +29,14 @@ class GLSceneActivity: Activity() {
         super.onResume()
         mView!!.onResume()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //mView!!.onDestroy()
+    }
 }
+
+//private fun GLSceneView.onDestroy() {
+//    TODO("Not yet implemented")
+
+//}

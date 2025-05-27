@@ -6,8 +6,9 @@
 #include "../logger.h"
 
 #include "Scene.h"
-#include "../models/MonochromeCube/MonochromeCube.h"
-#include "../models/OrangePyramid/OrangePyramid.h"
+#include "../models/Chess/ChessCube.h"
+#include "../models/Chess/ChessPyramid.h"
+#include "../models/Chess/Icosahedron.h"
 
 #define LOG_TAG "CHESS_AND_BRICKS_SHADERS"
 
@@ -16,13 +17,15 @@ static Scene scene;
 bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@ChessBricksScene::setupGraphics(%d, %d)", w, h);
     scene.reset();
-    scene.addDirectionalLight(DirectionalLight());
-    auto* cube = new MonochromeCube();
-    auto* pyramid = new OrangePyramid();
-    //auto* cube = new CubeWithFaceNormals();
-    //auto* pyramid = new PyramidWithFaceNormals();
+    //scene.addDirectionalLight(DirectionalLight());
+    auto* cube = new ChessCube();
+    auto* pyramid = new ChessPyramid();
+    //auto* icosahedron = new Icosahedron();
+
     cube->init();
     pyramid->init();
+    //icosahedron->init();
+    //scene.addModel(icosahedron);
     scene.addModel(cube);
     scene.addModel(pyramid);
     scene.setClearColor(glm::vec3(0.3f, 0.3f, 0.3f));
@@ -51,8 +54,6 @@ Java_com_ergv_gles_playground_ChessAndBricksSceneLib_nativeInit(JNIEnv* env, job
 extern "C" JNIEXPORT void JNICALL
 Java_com_ergv_gles_playground_ChessAndBricksSceneLib_nativeStep(JNIEnv* env, jobject obj) {
     scene.render();
-    //quantizedCube.tick();
-    //quantizedCube.renderFrame();
 }
 
 extern "C" JNIEXPORT void JNICALL

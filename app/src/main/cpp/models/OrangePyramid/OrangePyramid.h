@@ -6,7 +6,7 @@
 #include "../Model.h"
 #include <GLES2/gl2.h>
 
-class OrangePyramid : public Model {
+class ChessPyramid : public Model {
 
     GLuint mProgram{0};
     GLuint aPositionHandle{0};
@@ -41,8 +41,8 @@ class OrangePyramid : public Model {
     bool initShader();
 
 public:
-    ~OrangePyramid() override;
-    OrangePyramid()=default;
+    ~ChessPyramid() override;
+    ChessPyramid()=default;
     virtual bool init();
     virtual void render() const;
     virtual void updateState();

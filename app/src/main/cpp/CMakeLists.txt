@@ -62,9 +62,48 @@ target_link_libraries(lights
 #        GLESv2 # Direct dependency
 #)
 
+add_library(orangePyramid SHARED models/OrangePyramid/OrangePyramid.cpp)
+target_link_libraries(orangePyramid
+        #        model
+        shadersFactory
+        logger
+        android
+        EGL # Direct dependency
+        GLESv2 # Direct dependency
+)
+
+
 add_library(quantizedCube SHARED models/QuantizedCube/QuantizedCube.cpp)
 target_link_libraries(quantizedCube
 #        model
+        shadersFactory
+        logger
+        android
+        EGL # Direct dependency
+        GLESv2 # Direct dependency
+)
+
+add_library(chessCube SHARED models/Chess/ChessCube.cpp)
+target_link_libraries(chessCube
+        shadersFactory
+        logger
+        android
+        EGL # Direct dependency
+        GLESv2 # Direct dependency
+)
+
+add_library(chessPyramid SHARED models/Chess/ChessPyramid.cpp)
+target_link_libraries(chessPyramid
+        shadersFactory
+        logger
+        android
+        EGL # Direct dependency
+        GLESv2 # Direct dependency
+)
+
+
+add_library(icosahedron SHARED models/Chess/Icosahedron.cpp)
+target_link_libraries(icosahedron
         shadersFactory
         logger
         android
@@ -136,6 +175,19 @@ add_library(monochromaticShapesScene SHARED scenes/monochromaticShapes.cpp)
 target_link_libraries(monochromaticShapesScene
         scenes
         monochromeCube
+        orangePyramid
+        logger
+        EGL # Direct dependency
+        GLESv2 # Direct dependency
+)
+
+
+add_library(chessAndBricksScene SHARED scenes/ChessAndBricksScene.cpp)
+target_link_libraries(chessAndBricksScene
+        scenes
+        chessCube
+        chessPyramid
+        icosahedron
         logger
         EGL # Direct dependency
         GLESv2 # Direct dependency

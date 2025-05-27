@@ -31,6 +31,8 @@ class GLSceneView : GLSurfaceView {
     }
 
 
+
+
     private fun init(translucent: Boolean, depth: Int, stencil: Int) {
         /* By default, GLSurfaceView() creates a RGB_565 opaque surface.
                 * If we want a translucent one, we should change the surface's
@@ -302,6 +304,9 @@ class GLSceneView : GLSurfaceView {
                 "quantized_triangles" -> {
                     mJNIRenderer = QuantizedPolyhedronsSceneLib()
                 }
+                "Bricks" -> {
+                    mJNIRenderer = ChessAndBricksSceneLib()
+                }
                 else -> {
                     mJNIRenderer = MonochromaticModels()
                 }
@@ -317,9 +322,15 @@ class GLSceneView : GLSurfaceView {
         }
 
         override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-
-        // Do nothing.
+            // Do nothing.
         }
+
+        fun onDestroy() {
+            mJNIRenderer.destroy()
+        }
+
+
+
     }
 
     companion object {
@@ -332,5 +343,7 @@ class GLSceneView : GLSurfaceView {
                 Log.e(TAG, String.format("%s: EGL error: 0x%x", prompt, error))
             }
         }
+
+
     }
 }

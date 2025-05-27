@@ -1,9 +1,23 @@
+#version 300 es
 precision mediump float;
-uniform ivec3 uColor;
-uniform vec3 lightDirection;
+
+uniform vec3 uLightDirection;
+uniform mat4 u_mat_mvp;
 uniform vec3 uFaceNormal;
 
+uniform vec3 uSquareSize;
+uniform vec3 uEvenColor;
+uniform vec3 uOddColor;
+
+
+in vec3 vPosition;
+out vec4 fragColor;
+
 void main() {
-    float lightFactor = clamp(dot(-lightDirection,uFaceNormal), 0.6, 1.0);
-    gl_FragColor = vec4(lightFactor*vec3(uColor)/255.0, 1.0);
+    vec3 v = floor(vPosition/uSquareSize);
+    bool oddity = (0==((1&int(v.x))+(1&int(v.y))+(1&int(v.z)))%2);
+    vec3 color = (oddity ? uEvenColor : uOddColor);
+    vec3 tface = vec3(u_mat_mvp*vec4(uFaceNormal, 1.0));
+    float lightFactor = clamp(dot(-uLightDirection,uFaceNormal), 0.6, 1.0);
+    fragColor = vec4(lightFactor*color, 1.0);//lightFactor*color, 1.0);
 }

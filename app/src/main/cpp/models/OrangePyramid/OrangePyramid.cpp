@@ -9,12 +9,12 @@
 
 #define LOG_TAG "FRACTAL_CUBE"
 
-OrangePyramid::~OrangePyramid(){
+ChessPyramid::~ChessPyramid(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     glDeleteProgram(mProgram);
 }
-bool OrangePyramid::init(){
+bool ChessPyramid::init(){
 
     initShader();
     initGeometry();
@@ -23,7 +23,7 @@ bool OrangePyramid::init(){
 }
 
 
-bool OrangePyramid::initShader(){
+bool ChessPyramid::initShader(){
     auto vertexShader = "shaders/monochrome_with_normals/vertex.glsl";
     auto fragmentShader = "shaders/monochrome_with_normals/fragment.glsl";
 
@@ -49,7 +49,7 @@ bool OrangePyramid::initShader(){
 }
 
 
-void OrangePyramid::initGeometry(){
+void ChessPyramid::initGeometry(){
 
     const GLfloat triangleVertices[] = {
             +0.0f, +0.4f, +0.0f, //0
@@ -80,7 +80,7 @@ void OrangePyramid::initGeometry(){
 
 }
 
-void OrangePyramid::render() const{
+void ChessPyramid::render() const{
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -117,7 +117,7 @@ void OrangePyramid::render() const{
 
 }
 
-void OrangePyramid::updateState(){
+void ChessPyramid::updateState(){
 
     m_rotationAngle += m_delta_angle;
     if(m_rotationAngle > 360)

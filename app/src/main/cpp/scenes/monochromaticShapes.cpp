@@ -23,8 +23,9 @@
 #include <jni.h>
 #include "../logger.h"
 
-#include "../models/MonochromeCube/MonochromeCube.h"
 #include "../scenes/Scene.h"
+#include "../models/MonochromeCube/MonochromeCube.h"
+#include "../models/OrangePyramid/OrangePyramid.h"
 
 #define LOG_TAG "MONOCHROME_CUBE"
 
@@ -33,9 +34,13 @@ static Scene scene;
 bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@monochromaticColorsScene::setupGraphics(%d, %d)", w, h);
     scene.reset();
-    auto* monochromeCube = new MonochromeCube();
+    scene.addDirectionalLight(DirectionalLight());
+    auto* monochromeCube = new ChessCube();
+    auto* orangePyramid = new ChessPyramid();
     monochromeCube->init();
+    orangePyramid->init();
     scene.addModel(monochromeCube);
+    scene.addModel(orangePyramid);
     scene.setClearColor(glm::vec3(0.0f, 0.3f, 0.0f));
     scene.setViewPort(w, h);
     return true;

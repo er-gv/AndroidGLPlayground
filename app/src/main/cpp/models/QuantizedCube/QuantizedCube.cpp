@@ -7,8 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <thread>
-#include <chrono>
+
 #define LOG_TAG "QUANTIZED_CUBE"
 
 QuantizedCube::~QuantizedCube(){
@@ -119,10 +118,7 @@ void QuantizedCube::render() const {
     checkGlError("glVertexAttribPointer", LOG_TAG);
     glEnableVertexAttribArray(aColorHandle);
 
-    auto mvp = glm::mat4(1.0f);
-    mvp = glm::rotate(mvp, glm::radians((float)m_rotationAngle), rotation_axis);
-
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(mvp));
+    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
     glUniform1f(uQuantaHandle, quanta);
 
     checkGlError("glUseProgram", LOG_TAG);
@@ -144,6 +140,7 @@ void QuantizedCube::updateState() {
     m_rotationAngle +=0.2;
     if(m_rotationAngle > 360.0f)
         m_rotationAngle-=360.0f;
-
+    reset_modelview();
+    rotate(rotation_axis, glm::radians((float)m_rotationAngle));
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
 }

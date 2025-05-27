@@ -92,8 +92,7 @@ void FractalCube::render() const{
 
     glUseProgram(mProgram);
     checkGlError("glUseProgram", LOG_TAG);
-    glm::mat4 modelview{1.0};
-    modelview = glm::rotate(glm::mat4(1.0f), glm::radians((float)m_rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+
     //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.3f, -6.3f))
     //modelview = glm::scale(modelview, glm::vec3(0.75f, 0.75f, 0.75f));
     glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
@@ -126,5 +125,10 @@ void FractalCube::updateState(){
     m_rotationAngle += m_delta_angle;
     if(m_rotationAngle > 360)
         m_rotationAngle -= 360;
+    reset_modelview();
+    translate(glm::vec3(0.0f, 0.3f, -.3f));
+    scale(glm::vec3(0.6f, 1.0f, 0.6f));
+    rotate(glm::vec3(0.0f, 1.0f, 1.0f), glm::radians(m_rotationAngle));
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
 }

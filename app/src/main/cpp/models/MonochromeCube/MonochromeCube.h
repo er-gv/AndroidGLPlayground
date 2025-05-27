@@ -13,9 +13,9 @@
 #include "../../logger.h"
 #include "../../engine/shadersBuilder.h"
 
-class MonochromeCube : public Model{
+class ChessCube : public Model{
 private:
-    GLfloat grey{0.0f};
+
     float m_rotationAngle{0};
     float sign{1};
 
@@ -36,8 +36,8 @@ private:
 
 
 public:
-    MonochromeCube() = default;
-    ~MonochromeCube() override;
+    ChessCube() = default;
+    ~ChessCube() override;
     bool init() override;
     void updateState() override;
     void render() const override;

@@ -46,11 +46,12 @@ class MainMenuActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                //MenuItem("CanadaIsCold", R.drawable.canadian_flags)
+
                 VerticleMenu(
                     this,
-                    arrayOf("Fractal Patterns", "Quantized Triangles", "Monochromatic Faces"),
-                    arrayOf(R.drawable.canadian_flags, R.drawable.leumi_logo, R.drawable.iec_logo)
+                    arrayOf("Fractal Patterns", "Quantized Triangles", "Monochromatic Faces", "Bricks"),
+                    arrayOf(R.drawable.non_fractal_pyramid, R.drawable.quantized_cube,
+                        R.drawable.monochrome_shapes, R.drawable.bricks_icon)
                 )
             }
         }
@@ -97,6 +98,7 @@ class MainMenuActivity : ComponentActivity() {
                             "Fractal Patterns" -> "fractals"
                             "Quantized Triangles" -> "quantized_triangles"
                             "Monochromatic Faces" -> "monochromatic_cubes"
+                            "Bricks" -> "Bricks"
                             else -> ""
 
                         }
@@ -141,7 +143,7 @@ class MainMenuActivity : ComponentActivity() {
     @Composable
     fun GreetingPreview() {
         GlesPlaygroundTheme {
-            MenuItem(MainMenuActivity(), "Canada", R.drawable.canadian_flags)
+            MenuItem(MainMenuActivity(), "Canada", R.drawable.quantized_cube)
         }
     }
 }

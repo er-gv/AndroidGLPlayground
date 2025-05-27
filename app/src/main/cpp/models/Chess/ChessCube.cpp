@@ -2,7 +2,7 @@
 // Created by erez on 04/05/2025.
 //
 
-#include "MonochromeCube.h"
+#include "ChessCube.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -14,15 +14,15 @@
 #include "../../logger.h"
 #define LOG_TAG "MONOCHROMATIC_CUBE"
 
-MonochromeCube::~MonochromeCube(){
+ChessCube::~ChessCube(){
     glDeleteBuffers(1, &vbo);
     //glDeleteBuffers(1, &EBO);
     glDeleteProgram(mProgram);
 }
 
-bool MonochromeCube::init(){
-    const auto vertexShaderSrc ="shaders/vertex/monochrome_face_vertex.glsl";
-    const auto fragmentShaderSrc ="shaders/fragment/monochrome_face_fragment.glsl";
+bool ChessCube::init(){
+    const auto vertexShaderSrc ="shaders/chess/vertex.glsl";
+    const auto fragmentShaderSrc ="shaders/chess/fragment.glsl";
     mProgram = ShadersBuilder::buildGLProgram(vertexShaderSrc,
                                               fragmentShaderSrc);
     if (!mProgram) {
@@ -30,54 +30,48 @@ bool MonochromeCube::init(){
         return false;
     }
 
-    aPositionHandle = glGetAttribLocation(mProgram, "a_Position");
+    aPositionHandle = glGetAttribLocation(mProgram, "aPosition");
     checkGlError("glGetAttribLocation", LOG_TAG);
-    log_debug(LOG_TAG,"glGetAttribLocation(\"aPosition\") = %u\n", aPositionHandle);
+    log_info(LOG_TAG,"glGetAttribLocation(\"aPosition\") = %d\n", aPositionHandle);
 
+    uSquareSizeHandle = glGetUniformLocation(mProgram, "uSquareSize");
+    uOddColorHandle = glGetUniformLocation(mProgram, "uOddColor");
+    uEvenColorHandle = glGetUniformLocation(mProgram, "uEvenColor");
 
-    uColorHandle = glGetUniformLocation(mProgram, "uColor");
     checkGlError("glGetUniformLocation", LOG_TAG);
-    log_info(LOG_TAG, "glGetUniformLocation(\"uColor\") = %d\n", uColorHandle);
+    log_info(LOG_TAG, "glGetUniformLocation(\"uSquareSizeolor\") = %d\n", uSquareSizeHandle);
 
-    u_matMVP = glGetUniformLocation(mProgram, "u_MVPMatrix");
-    checkGlError("glGetUniformLocation", LOG_TAG);
-    log_info(LOG_TAG, "glGetUniformLocation(\"u_mat_mvp\") = %d\n", uColorHandle);
 
+    uFaceNormalHandle = glGetUniformLocation(mProgram, "uFaceNormal");
+    uLightDirectionHandle = glGetUniformLocation(mProgram, "uLightDirection");
+    uMatMVPHandle = glGetUniformLocation(mProgram, "u_mat_mvp");
 
     return initVBO();
 
 }
 
-bool MonochromeCube::initVBO() {
+bool ChessCube::initVBO() {
 
     const GLfloat vertices[]{
 
-            -0.2f, +0.5f, +0.4f,  //0
-            +0.2f, +0.5f, +0.4f,  //1
-            +0.8f, -0.8f, +0.6f, //2
-            -0.8f, -0.8f, +0.6f,  //3
+            -0.7f, +0.7f, +0.7f,  //0
+            +0.7f, +0.7f, +0.7f,  //1
+            +0.7f, -0.7f, +0.7f, //2
+            -0.7f, -0.7f, +0.7f,  //3
 
-            /*+0.8f, -0.8f, -0.6f,//5
-            +0.8f, -0.8f, +0.6f, //2
-            +0.2f, +0.5f, -0.4f,  //7
-            +0.2f, +0.5f, +0.4f, //1
-
-            -0.2f, +0.5f, -0.4f, //6
-            -0.2f, +0.5f, +0.4f, //0
-            -0.8f, -0.8f, -0.6f, //4
-            -0.8f, -0.8f, +0.6f, //3
-*/
-            -0.8f, -0.8f, -0.6f, //4
-            +0.8f, -0.8f, -0.6f,  //5
-            -0.2f, +0.5f, -0.4f,  //6
-            +0.2f, +0.5f, -0.4f,  //7
+            -0.7f, -0.7f, -0.7f, //4
+            +0.7f, -0.7f, -0.7f,  //5
+            -0.7f, +0.7f, -0.7f,  //6
+            +0.7f, +0.7f, -0.7f,  //7
     };
 
     const GLuint indices[]{
-        0, 1, 3, 2,
-        1,7,2,5,
-        3,4,0,6,
-        4,5,6,7
+        0, 1, 3, 2, //front 0,0,1
+        1,7,2,5,//right 1, 0 0,
+        3,4,0,6,//left -1, 0,0
+        6,7,0,1,//top 0,1,0
+        3,2,4,5,//bottom 0,-1,0
+        4,5,6,7//back0,0,-1
     };
 
     glGenBuffers(1, &vbo);
@@ -92,7 +86,9 @@ bool MonochromeCube::initVBO() {
 
     return true;
 }
-void MonochromeCube::render() const {
+
+
+void ChessCube::render() const {
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -104,28 +100,28 @@ void MonochromeCube::render() const {
 
 
     glUseProgram(mProgram);
-    //glm::mat4 mvp = glm::mat4(1.0f);
-    //mvp = glm::scale(mvp, glm::vec3{0.35f});
-    //mvp = glm::rotate(mvp, glm::radians((float)m_rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-    //mvp = glm::translate(mvp, glm::vec3(1.60f, 0.2f, 0.0f));
-
-
-    glUniformMatrix4fv(u_matMVP, 1, GL_FALSE, glm::value_ptr(modelview));
-
-    const glm::vec3 colors[]{
-        glm::vec3{0.9f, 0.2f, 0.3f},
-        glm::vec3{0.2f, 0.9f, 0.3f},
-        glm::vec3{0.9f, 0.1f, 0.9f},
-        glm::vec3{0.9f, 0.7f, 0.1f},
-
-    };
+    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
 
 
     auto stride = 4u*sizeof(GLuint);
     auto offset = 0u;
-    for(auto i=0; i<4; ++i){
-        glUniform3f(uColorHandle, colors[i].r, colors[i].g, colors[i].b);
-        checkGlError("glUniform3fv", LOG_TAG);
+    glUniform3f(uEvenColorHandle, 1.0, 0.0, 0.0);
+    glUniform3f(uOddColorHandle, 0.0, 1.0, 0.0);
+    glUniform3f(uSquareSizeHandle, 0.25, 0.25, 0.25);
+    glUniform3f(uLightDirectionHandle,glm::cos(glm::radians(30.f)), 1, 1.f);
+
+    const GLfloat faceNormals[]{
+      0.f,0.f,1.f,
+      1.f,0.f,0.f,
+      -1.f,0.f,0.f,
+      0.f,1.f,0.f,
+      0.f,-1.f,0.f,
+      0.f,0.f,-1.f
+    };
+
+    for(auto i=0; i<6; ++i){
+        auto k =3*i;
+        glUniform3f(uFaceNormalHandle, faceNormals[k],faceNormals[k+1],faceNormals[k+2]);
         glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT,
                        reinterpret_cast<const void *>(offset));
         checkGlError("glDrawElements", LOG_TAG);
@@ -140,14 +136,17 @@ void MonochromeCube::render() const {
 
 }
 
-void MonochromeCube::updateState() {
+void ChessCube::updateState() {
 
-    m_rotationAngle +=1.2;
-    if(m_rotationAngle > 360.0f)
-        m_rotationAngle -= 360.0f;
+    auto static TWO_PI{glm::two_pi<float>()};
+    m_rotationAngle +=m_delta_angle;
+    if(m_rotationAngle > TWO_PI)
+        m_rotationAngle -= TWO_PI;
     reset_modelview();
+    //translate(-pivot);
     scale(glm::vec3{0.35f});
-    rotate(glm::vec3{0.0f, 1.0f, 0.0f}, glm::radians(m_rotationAngle));
-    translate(glm::vec3(1.60f, 0.4f, 0.0f));
+    rotate(glm::vec3{-1.0f, 1.0f, 1.0f}, m_rotationAngle);
+    translate(glm::vec3(1.60f, 0.6f, 0.0f));
+    //translate(pivot);
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
 }
