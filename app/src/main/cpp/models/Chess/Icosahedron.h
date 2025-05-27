@@ -1,0 +1,14 @@
+//
+// Created by erez on 24/05/2025.
+//
+
+#ifndef ANDROIDGLPLAYGROUND_ICOSAHEDRON_H
+#define ANDROIDGLPLAYGROUND_ICOSAHEDRON_H
+
+
+class Icosahedron {
+
+};
+
+
+#endif //ANDROIDGLPLAYGROUND_ICOSAHEDRON_H
