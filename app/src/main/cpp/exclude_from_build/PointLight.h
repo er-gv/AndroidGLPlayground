@@ -8,8 +8,8 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#include <glm/glm.hpp>
-#include <glm/vec3.hpp>
+#include "../engine/libs/glm/glm.hpp"
+#include "../engine/libs/glm/vec3.hpp"
 
 class PointLight {
 

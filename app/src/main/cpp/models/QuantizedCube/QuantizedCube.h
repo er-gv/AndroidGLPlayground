@@ -9,15 +9,13 @@
 
 #include <cmath>
 #include <map>
-#include <glm/vec3.hpp>
+#include "../../engine/libs/glm/vec3.hpp"
 #include "../Model.h"
 #include "../../logger.h"
 #include "../../engine/shadersBuilder.h"
 
 class QuantizedCube : public Model{
 private:
-    GLfloat grey{0.0f};
-    float sign{1};
     float m_rotationAngle;
     glm::vec3 rotation_axis{1.0f, 1.0f, -1.0f};
     GLfloat quanta{10.0f};

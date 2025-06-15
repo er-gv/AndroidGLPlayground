@@ -3,9 +3,9 @@
 //
 
 #include "ChessCube.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "../../engine/libs/glm/glm.hpp"
+#include "../../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
 
 //
 // Created by erez on 22/04/2025.
@@ -14,39 +14,24 @@
 #include "../../logger.h"
 #define LOG_TAG "MONOCHROMATIC_CUBE"
 
+ChessCube::ChessCube(Material* material) : material{material}{};
 ChessCube::~ChessCube(){
-    glDeleteBuffers(1, &vbo);
-    //glDeleteBuffers(1, &EBO);
-    glDeleteProgram(mProgram);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 }
 
 bool ChessCube::init(){
-    const auto vertexShaderSrc ="shaders/chess/vertex.glsl";
-    const auto fragmentShaderSrc ="shaders/chess/fragment.glsl";
-    mProgram = ShadersBuilder::buildGLProgram(vertexShaderSrc,
-                                              fragmentShaderSrc);
-    if (!mProgram) {
-        log_error(LOG_TAG, "Could not create program.");
-        return false;
-    }
 
-    aPositionHandle = glGetAttribLocation(mProgram, "aPosition");
-    checkGlError("glGetAttribLocation", LOG_TAG);
-    log_info(LOG_TAG,"glGetAttribLocation(\"aPosition\") = %d\n", aPositionHandle);
+    //{std::pair<const char* , VertexAttribute>{"aPosition", {3, 0}}};
+    auto attributesInitialized = material->addAttributes(std::vector<std::tuple< const char*, GLsizei, GLsizei>> {
+            std::make_tuple("aPosition", 3, 0)
+    });
+    auto uniformsInitialized = material->addUniforms(std::vector<const char*>{
+            "uLightDirection", "u_mat_mvp", "uFaceNormal",
+            "uSquareSize",    "uEvenColor", "uOddColor"
+    });
 
-    uSquareSizeHandle = glGetUniformLocation(mProgram, "uSquareSize");
-    uOddColorHandle = glGetUniformLocation(mProgram, "uOddColor");
-    uEvenColorHandle = glGetUniformLocation(mProgram, "uEvenColor");
-
-    checkGlError("glGetUniformLocation", LOG_TAG);
-    log_info(LOG_TAG, "glGetUniformLocation(\"uSquareSizeolor\") = %d\n", uSquareSizeHandle);
-
-
-    uFaceNormalHandle = glGetUniformLocation(mProgram, "uFaceNormal");
-    uLightDirectionHandle = glGetUniformLocation(mProgram, "uLightDirection");
-    uMatMVPHandle = glGetUniformLocation(mProgram, "u_mat_mvp");
-
-    return initVBO();
+    return uniformsInitialized && attributesInitialized && initVBO();
 
 }
 
@@ -74,13 +59,13 @@ bool ChessCube::initVBO() {
         4,5,6,7//back0,0,-1
     };
 
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -90,25 +75,21 @@ bool ChessCube::initVBO() {
 
 void ChessCube::render() const {
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glVertexAttribPointer(aPositionHandle, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat),
-                          (void*) nullptr);
-    checkGlError("glVertexAttribPointer", LOG_TAG);
-    glEnableVertexAttribArray(aPositionHandle);
-    checkGlError("glEnableVertexAttribArray", LOG_TAG);
 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    material->populateAttribBuffers();
+    material->enable();
 
-    glUseProgram(mProgram);
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
+    glUniformMatrix4fv(material->getUniformLocation("u_mat_mvp"), 1, GL_FALSE, glm::value_ptr(transform()));
 
 
     auto stride = 4u*sizeof(GLuint);
     auto offset = 0u;
-    glUniform3f(uEvenColorHandle, 1.0, 0.0, 0.0);
-    glUniform3f(uOddColorHandle, 0.0, 1.0, 0.0);
-    glUniform3f(uSquareSizeHandle, 0.25, 0.25, 0.25);
-    glUniform3f(uLightDirectionHandle,glm::cos(glm::radians(30.f)), 1, 1.f);
+    glUniform3f(material->getUniformLocation("uEvenColor"), 1.0, 0.0, 0.0);
+    glUniform3f(material->getUniformLocation("uOddColor"), 0.0, 1.0, 0.0);
+    glUniform3f(material->getUniformLocation("uSquareSize"), 0.25, 0.25, 0.25);
+    glUniform3f(material->getUniformLocation("uLightDirection"),glm::cos(glm::radians(30.f)), 1, 1.f);
 
     const GLfloat faceNormals[]{
       0.f,0.f,1.f,
@@ -121,7 +102,7 @@ void ChessCube::render() const {
 
     for(auto i=0; i<6; ++i){
         auto k =3*i;
-        glUniform3f(uFaceNormalHandle, faceNormals[k],faceNormals[k+1],faceNormals[k+2]);
+        glUniform3f(material->getUniformLocation("uFaceNormal"), faceNormals[k],faceNormals[k+1],faceNormals[k+2]);
         glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT,
                        reinterpret_cast<const void *>(offset));
         checkGlError("glDrawElements", LOG_TAG);
@@ -131,22 +112,26 @@ void ChessCube::render() const {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glDisableVertexAttribArray(aPositionHandle);
-    glUseProgram(0);
+    material->disable();
+
 
 }
 
 void ChessCube::updateState() {
 
     auto static TWO_PI{glm::two_pi<float>()};
-    m_rotationAngle +=m_delta_angle;
+    const float m_delta_angle{glm::pi<float>()/250.f};
+
+    static float m_rotationAngle{0.f};
+
     if(m_rotationAngle > TWO_PI)
         m_rotationAngle -= TWO_PI;
-    reset_modelview();
+    transform.reset();
     //translate(-pivot);
-    scale(glm::vec3{0.35f});
-    rotate(glm::vec3{-1.0f, 1.0f, 1.0f}, m_rotationAngle);
-    translate(glm::vec3(1.60f, 0.6f, 0.0f));
-    //translate(pivot);
+    transform.scale(glm::vec3{0.35f});
+    transform.rotate(m_rotationAngle, glm::vec3{-1.0f, 1.0f, 1.0f});
+    transform.translate(glm::vec3(-0.60f, 0.6f, -.4f));
+
+    m_rotationAngle +=m_delta_angle;
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
 }

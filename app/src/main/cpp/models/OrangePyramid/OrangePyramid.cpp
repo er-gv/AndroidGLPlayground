@@ -4,17 +4,17 @@
 #include "OrangePyramid.h"
 #include "../../logger.h"
 #include "../../engine/shadersBuilder.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
+#include "../../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
 #define LOG_TAG "FRACTAL_CUBE"
 
-ChessPyramid::~ChessPyramid(){
+OrangePyramid::~OrangePyramid(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     glDeleteProgram(mProgram);
 }
-bool ChessPyramid::init(){
+
+bool OrangePyramid::init(){
 
     initShader();
     initGeometry();
@@ -23,7 +23,7 @@ bool ChessPyramid::init(){
 }
 
 
-bool ChessPyramid::initShader(){
+bool OrangePyramid::initShader(){
     auto vertexShader = "shaders/monochrome_with_normals/vertex.glsl";
     auto fragmentShader = "shaders/monochrome_with_normals/fragment.glsl";
 
@@ -49,7 +49,7 @@ bool ChessPyramid::initShader(){
 }
 
 
-void ChessPyramid::initGeometry(){
+void OrangePyramid::initGeometry(){
 
     const GLfloat triangleVertices[] = {
             +0.0f, +0.4f, +0.0f, //0
@@ -80,7 +80,7 @@ void ChessPyramid::initGeometry(){
 
 }
 
-void ChessPyramid::render() const{
+void OrangePyramid::render() const{
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -92,20 +92,16 @@ void ChessPyramid::render() const{
 
     glUseProgram(mProgram);
     checkGlError("glUseProgram", LOG_TAG);
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
+    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(transform()));
     glm::vec3 light(0,0, -1);
     glUniform3fv(lightDirectionHandle, 3, glm::value_ptr(light));
 
     unsigned offset{0};
 
-
-    glLineWidth(2.0f);
-
-
     for(auto k=0; k< 4; ++k ) {
         glUniform3i(uColorHandle, triangleColors[k].r, triangleColors[k].g, triangleColors[k].b);
         glUniform3f(uFaceNormalHandle, normals[k].x, normals[k].y, normals[k].z);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, reinterpret_cast<const void *>(offset*sizeof(GLuint)));
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void *)(offset*sizeof(GLuint)));
         checkGlError("glDrawElements", LOG_TAG);
         offset+=3;
     }
@@ -117,15 +113,18 @@ void ChessPyramid::render() const{
 
 }
 
-void ChessPyramid::updateState(){
+void OrangePyramid::updateState(){
 
+    static const auto TWO_PI{glm::two_pi<float>()};
+    static float m_delta_angle{TWO_PI/400};
+
+    if(m_rotationAngle > TWO_PI)
+        m_rotationAngle -= TWO_PI;
+    transform.reset();
+    transform.scale(glm::vec3{0.7f});
+    transform.translate(glm::vec3(-0.4f, -0.2f, -0.3f));
+    transform.rotate(m_rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
     m_rotationAngle += m_delta_angle;
-    if(m_rotationAngle > 360)
-        m_rotationAngle -= 360;
-    reset_modelview();
-    scale(glm::vec3{0.6f});
-    translate(glm::vec3(-0.8f, -0.8f, 0.0f));
-    rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(m_rotationAngle));
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
 }

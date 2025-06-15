@@ -1,8 +1,8 @@
-package com.ergv.gles.playground
+package com.ergv.gles.playground.scenes
 
-class MonochromaticModels : AbstractJNILib() {
+class FractalPolyhedronsSceneLib : AbstractScene() {
     init {
-        System.loadLibrary("monochromaticShapesScene")
+        System.loadLibrary("fractalPolyhedronsScene")
     }
 
     /**
@@ -25,9 +25,5 @@ class MonochromaticModels : AbstractJNILib() {
     public override fun destroy(){
         nativeDestroy();
     }
-
-
-
-
 
 }

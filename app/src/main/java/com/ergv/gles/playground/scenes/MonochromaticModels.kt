@@ -1,8 +1,8 @@
-package com.ergv.gles.playground
+package com.ergv.gles.playground.scenes
 
-class ChessAndBricksSceneLib : AbstractJNILib() {
+class MonochromaticModels : AbstractScene() {
     init {
-        System.loadLibrary("chessAndBricksScene")
+        System.loadLibrary("monochromaticShapesScene")
     }
 
     /**
@@ -25,6 +25,7 @@ class ChessAndBricksSceneLib : AbstractJNILib() {
     public override fun destroy(){
         nativeDestroy();
     }
+
 
 
 

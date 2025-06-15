@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "../logger.h"
 #include "../engine/Boundaries.h"
-#include <glm/gtc/type_ptr.hpp>
+#include "../libs/glm/gtc/type_ptr.hpp"
 
 Camera::Camera():
     m_eye(glm::vec3(0,0,0)),

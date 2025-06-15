@@ -62,6 +62,7 @@ void ShadersBuilder::reportGlProgramLinkError(GLuint program){
     }
 }
 
+
 void ShadersBuilder::reportShaderCompilationError(GLuint shader, GLuint shaderType){
 
     log_error(LOG_TAG, "Could not compile shader %d", shader);
@@ -76,6 +77,7 @@ void ShadersBuilder::reportShaderCompilationError(GLuint shader, GLuint shaderTy
         }
     }
 }
+
 
 GLuint ShadersBuilder::linkShaders(GLuint vertexShader, GLuint  fragmentShader){
 
@@ -98,6 +100,7 @@ GLuint ShadersBuilder::linkShaders(GLuint vertexShader, GLuint  fragmentShader){
     glDeleteShader(fragmentShader);
     return glProgram;
 }
+
 
 GLuint ShadersBuilder::buildGLProgram(const char*  pVertexSource, const char*  pFragmentSource){
 

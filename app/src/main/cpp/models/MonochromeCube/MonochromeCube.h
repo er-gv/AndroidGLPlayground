@@ -13,18 +13,15 @@
 #include "../../logger.h"
 #include "../../engine/shadersBuilder.h"
 
-class ChessCube : public Model{
+class MonochromeCube : public Model{
 private:
-
-    float m_rotationAngle{0};
-    float sign{1};
 
     GLuint mProgram{888};
     GLuint aPositionHandle{8};
 
     GLint uColorHandle{0};
     GLint u_matMVP{0};
-    GLint u_matMV{0};
+    //GLint u_matMV{0};
     //GLint uNormalHandle{0};
     //GLint uMatMVHandle{0};
     //GLint uMatMVPHandle{0};
@@ -36,8 +33,8 @@ private:
 
 
 public:
-    ChessCube() = default;
-    ~ChessCube() override;
+    MonochromeCube() = default;
+    ~MonochromeCube() override;
     bool init() override;
     void updateState() override;
     void render() const override;

@@ -1,9 +1,8 @@
-package com.ergv.gles.playground
+package com.ergv.gles.playground.scenes
 
-
-class FractalPolyhedronsSceneLib :AbstractJNILib() {
+class TexturedModelsSceneLib : AbstractScene() {
     init {
-        System.loadLibrary("fractalPolyhedronsScene")
+        System.loadLibrary("texturedModelsScene")
     }
 
     /**

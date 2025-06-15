@@ -6,37 +6,30 @@
 
 #include <thread>
 #include <chrono>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "../engine/materials/Material.h"
+#include "../engine/Transform.h"
+#include "../engine/libs/glm/glm.hpp"
+#include "../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../engine/libs/glm/gtc/type_ptr.hpp"
+
 
 class Model {
+    friend class Scene;
 public:
-    virtual ~Model() = default;
-    Model()=default;
+    virtual ~Model() {if (material) delete material;};
+    explicit Model() : material{nullptr} {}
+    explicit Model(Material *material) : material{material} {}
     virtual bool init() = 0;
     virtual void render() const = 0;
     virtual void updateState() = 0;
 
 protected:
-    glm::vec3 pivot;
-    glm::mat4 modelview{1.0f};
+    Transform transform;
+    glm::vec3 pivot{0};
+    Material* material;
 
     inline void setPivot(glm::vec3 &p){pivot = p;}
 
-    inline void reset_modelview(){
-        modelview = glm::mat4{1.0f};
-    }
-    inline void translate(const glm::vec3 &t){
-        modelview *= glm::translate(glm::mat4{1}, t);
-    }
-
-    inline void scale(const glm::vec3 &s){
-        modelview *= glm::scale(glm::mat4{1}, s);
-    }
-
-    inline void rotate(const glm::vec3 &axis, float angle){
-        modelview *= glm::rotate(glm::mat4{1}, angle, axis);
-    }
 };
 
 

@@ -10,7 +10,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 
@@ -27,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -49,9 +49,9 @@ class MainMenuActivity : ComponentActivity() {
 
                 VerticleMenu(
                     this,
-                    arrayOf("Fractal Patterns", "Quantized Triangles", "Monochromatic Faces", "Bricks"),
+                    arrayOf("Fractal Patterns", "Quantized Triangles", "Monochromatic Faces", "Bricks", "Textures"),
                     arrayOf(R.drawable.non_fractal_pyramid, R.drawable.quantized_cube,
-                        R.drawable.monochrome_shapes, R.drawable.bricks_icon)
+                        R.drawable.monochrome_shapes, R.drawable.bricks_icon, R.drawable.stone_wall_public_domain)
                 )
             }
         }
@@ -66,7 +66,7 @@ class MainMenuActivity : ComponentActivity() {
         modifier: Modifier = Modifier
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             modifier = modifier.padding(vertical = 120.dp)
         )
         {
@@ -99,6 +99,7 @@ class MainMenuActivity : ComponentActivity() {
                             "Quantized Triangles" -> "quantized_triangles"
                             "Monochromatic Faces" -> "monochromatic_cubes"
                             "Bricks" -> "Bricks"
+                            "Textures" -> "Textures"
                             else -> ""
 
                         }

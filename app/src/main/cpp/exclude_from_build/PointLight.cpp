@@ -3,11 +3,11 @@
 //
 
 #include "PointLight.h"
-#include <glm/glm.hpp>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "../libs/glm/glm.hpp"
+#include "../libs/glm/vec3.hpp"
+#include "../libs/glm/mat4x4.hpp"
+#include "../libs/glm/gtc/type_ptr.hpp"
+#include "../libs/glm/gtc/matrix_transform.hpp"
 #include <android/log.h>
 PointLight::PointLight() {
     mSize = 5.0f;

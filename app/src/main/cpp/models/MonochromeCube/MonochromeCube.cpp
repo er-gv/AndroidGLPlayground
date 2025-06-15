@@ -3,9 +3,9 @@
 //
 
 #include "MonochromeCube.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "../../engine/libs/glm/glm.hpp"
+#include "../../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
 
 //
 // Created by erez on 22/04/2025.
@@ -14,13 +14,13 @@
 #include "../../logger.h"
 #define LOG_TAG "MONOCHROMATIC_CUBE"
 
-ChessCube::~ChessCube(){
+MonochromeCube::~MonochromeCube(){
     glDeleteBuffers(1, &vbo);
     //glDeleteBuffers(1, &EBO);
     glDeleteProgram(mProgram);
 }
 
-bool ChessCube::init(){
+bool MonochromeCube::init(){
     const auto vertexShaderSrc ="shaders/vertex/monochrome_face_vertex.glsl";
     const auto fragmentShaderSrc ="shaders/fragment/monochrome_face_fragment.glsl";
     mProgram = ShadersBuilder::buildGLProgram(vertexShaderSrc,
@@ -48,7 +48,7 @@ bool ChessCube::init(){
 
 }
 
-bool ChessCube::initVBO() {
+bool MonochromeCube::initVBO() {
 
     const GLfloat vertices[]{
 
@@ -92,7 +92,7 @@ bool ChessCube::initVBO() {
 
     return true;
 }
-void ChessCube::render() const {
+void MonochromeCube::render() const {
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -110,7 +110,7 @@ void ChessCube::render() const {
     //mvp = glm::translate(mvp, glm::vec3(1.60f, 0.2f, 0.0f));
 
 
-    glUniformMatrix4fv(u_matMVP, 1, GL_FALSE, glm::value_ptr(modelview));
+    glUniformMatrix4fv(u_matMVP, 1, GL_FALSE, glm::value_ptr(transform()));
 
     const glm::vec3 colors[]{
         glm::vec3{0.9f, 0.2f, 0.3f},
@@ -140,14 +140,20 @@ void ChessCube::render() const {
 
 }
 
-void ChessCube::updateState() {
+void MonochromeCube::updateState() {
 
-    m_rotationAngle +=1.2;
-    if(m_rotationAngle > 360.0f)
-        m_rotationAngle -= 360.0f;
-    reset_modelview();
-    scale(glm::vec3{0.35f});
-    rotate(glm::vec3{0.0f, 1.0f, 0.0f}, glm::radians(m_rotationAngle));
-    translate(glm::vec3(1.60f, 0.4f, 0.0f));
+    static const auto TWO_PI = glm::two_pi<float>();
+    static const auto rotation_delta {TWO_PI/200};
+    static auto m_rotationAngle =0.f;
+
+    if(m_rotationAngle > TWO_PI)
+        m_rotationAngle -= TWO_PI;
+    transform.reset();
+    transform.translate(glm::vec3(1.60f, 1.3f, 0.0f));
+    transform.scale(glm::vec3{0.35f});
+    transform.rotate(m_rotationAngle, glm::vec3{0.0f, 1.0f, 0.0f});
+
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+    m_rotationAngle +=rotation_delta;
 }

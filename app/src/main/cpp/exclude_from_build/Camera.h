@@ -8,10 +8,10 @@
 
 #include "../gl_includes.h"
 #include "../engine/Boundaries.h"
-#include <glm/glm.hpp>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+#include "../libs/glm/glm.hpp"
+#include "../libs/glm/vec3.hpp"
+#include "../libs/glm/mat4x4.hpp"
+#include "../libs/glm/gtc/matrix_transform.hpp" // glm::translate, glm::rotate, glm::scale, glm::perspective
 
 class Camera {
     glm::vec3 m_eye{};
