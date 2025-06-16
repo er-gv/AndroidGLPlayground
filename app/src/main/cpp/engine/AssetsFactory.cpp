@@ -5,9 +5,6 @@
 #include "AssetsFactory.h"
 
 #include <jni.h>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
-
 #include <GLES2/gl2.h>
 #include <cstdlib>
 
@@ -17,7 +14,8 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include "../logger.h"
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "libs/stb_image/stb_image.h"
 #define LOG_TAG "ASSETS_FACTORY"
 
 static AAssetManager* assetsManager = nullptr;
@@ -29,6 +27,7 @@ std::string readGeometryAsset(const std::string& geometry_path){
         log_error(LOG_TAG, "Could not open asset: %s", geometry_path.c_str());
         throw (std::runtime_error("Could not open asset."));
     }
+
     auto len = AAsset_getLength(asset);
     auto* buffer = new char[len+1];
     AAsset_read(asset, buffer, len);
@@ -40,7 +39,9 @@ std::string readGeometryAsset(const std::string& geometry_path){
     return geometryJSON;
 }
 
-std::string readTextureAsset(const std::string& texture_path){
+
+
+void readTextureAsset(const std::string& texture_path, TextureData &td){
     auto* asset = AAssetManager_open(assetsManager, texture_path.c_str(), AASSET_MODE_STREAMING);
     if (!asset) {
         char const* f{strdup(texture_path.c_str())};
@@ -48,15 +49,14 @@ std::string readTextureAsset(const std::string& texture_path){
         delete[] f;
         throw (std::runtime_error("Could not open asset."));
     }
+
     auto len = AAsset_getLength(asset);
-    auto* buffer = new char[len+1];
+    auto* buffer = new unsigned char[len+1];
     AAsset_read(asset, buffer, len);
     buffer[len]= '\0';
     AAsset_close(asset);
-    log_debug(LOG_TAG, "read shader code: %s", buffer);
-    std::string textrueData{buffer};
+    td.data = stbi_load_from_memory(buffer, len, &td.width, &td.height, &td.channels_in_file, td.channels_in_texture);
     delete[] buffer;
-    return textrueData;
 }
 
 std::string readShaderAsset(const std::string& shader_path){

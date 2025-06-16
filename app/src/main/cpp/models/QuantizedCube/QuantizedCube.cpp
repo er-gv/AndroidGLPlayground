@@ -4,10 +4,9 @@
 
 #include "QuantizedCube.h"
 #include "../../logger.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
+#include "../../engine/libs/glm/glm.hpp"
+#include "../../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
 #define LOG_TAG "QUANTIZED_CUBE"
 
 QuantizedCube::~QuantizedCube(){
@@ -73,8 +72,8 @@ void QuantizedCube::initModel(){
 
 bool QuantizedCube::initMaterial(){
 
-    const auto vertexShaderSrc ="shaders/vertex/color_vertex_shader.glsl";
-    const auto fragmentShaderSrc ="shaders/fragment/quantized_color_fragment_shader.glsl";
+    const auto vertexShaderSrc ="shaders/quantized_colors/vertex.glsl";
+    const auto fragmentShaderSrc ="shaders/quantized_colors/fragment.glsl";
     mProgram = ShadersBuilder::buildGLProgram(vertexShaderSrc,
                                               fragmentShaderSrc);
     if (!mProgram) {
@@ -118,7 +117,7 @@ void QuantizedCube::render() const {
     checkGlError("glVertexAttribPointer", LOG_TAG);
     glEnableVertexAttribArray(aColorHandle);
 
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
+    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(transform()));
     glUniform1f(uQuantaHandle, quanta);
 
     checkGlError("glUseProgram", LOG_TAG);
@@ -140,7 +139,8 @@ void QuantizedCube::updateState() {
     m_rotationAngle +=0.2;
     if(m_rotationAngle > 360.0f)
         m_rotationAngle-=360.0f;
-    reset_modelview();
-    rotate(rotation_axis, glm::radians((float)m_rotationAngle));
+    transform.reset();
+
+    transform.rotate(glm::radians((float)m_rotationAngle), rotation_axis);
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
 }

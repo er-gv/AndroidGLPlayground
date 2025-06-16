@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include <glm/glm.hpp>
+#include "../libs/glm/vec3.hpp"
+#include "../libs/glm/vec3.hpp"
 
 class DirectionalLight {
 

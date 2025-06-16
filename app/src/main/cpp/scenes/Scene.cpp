@@ -66,6 +66,9 @@ void Scene::addModel(Model* pModel){
 }
 
 void Scene::reset(){
+    for(auto model : models){
+        delete model;
+    }
     models.clear();
 }
 
@@ -80,4 +83,5 @@ void Scene::render(){
         pModel->updateState();
         pModel->render();
     }
+
 }

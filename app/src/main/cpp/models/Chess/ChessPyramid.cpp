@@ -4,51 +4,39 @@
 #include "ChessPyramid.h"
 #include "../../logger.h"
 #include "../../engine/shadersBuilder.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "../../engine/libs/glm/glm.hpp"
+#include "../../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
+#include "../../scenes/Scene.h"
 
 #define LOG_TAG "CHESS_PYRAMID"
 
 ChessPyramid::~ChessPyramid(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteProgram(mProgram);
+
 }
 bool ChessPyramid::init(){
 
-    initShader();
+    initMaterial();
     initGeometry();
 
     return true;
 }
 
 
-bool ChessPyramid::initShader(){
-    auto vertexShader = "shaders/chess/vertex.glsl";
-    auto fragmentShader = "shaders/chess/fragment.glsl";
+bool ChessPyramid::initMaterial(){
 
-    mProgram = ShadersBuilder::buildGLProgram(vertexShader, fragmentShader);
-    if (!mProgram) {
-        log_error(LOG_TAG,"Could not create program.");
-        return false;
-    }
-    aPositionHandle = glGetAttribLocation(mProgram, "aPosition");
-    checkGlError("glGetAttribLocation", LOG_TAG);
-    log_info(LOG_TAG,"glGetAttribLocation(\"aPosition\") = %d\n", aPositionHandle);
+    auto attributesInitialized = material->addAttributes(std::vector<std::tuple< const char*, GLsizei, GLsizei>> {
+            std::make_tuple("aPosition", 3, 0)
+    });
 
-    uSquareSizeHandle = glGetUniformLocation(mProgram, "uSquareSize");
-    uOddColorHandle = glGetUniformLocation(mProgram, "uOddColor");
-    uEvenColorHandle = glGetUniformLocation(mProgram, "uEvenColor");
+    auto uniformsInitialized = material->addUniforms(std::vector<const char*>{
+            "uLightDirection", "u_mat_mvp", "uFaceNormal",
+            "uSquareSize",    "uEvenColor", "uOddColor"
+    });
 
-    checkGlError("glGetUniformLocation", LOG_TAG);
-    log_info(LOG_TAG, "glGetUniformLocation(\"uSquareSize\") = %d\n", uSquareSizeHandle);
-
-
-    uFaceNormalHandle = glGetUniformLocation(mProgram, "uFaceNormal");
-    uLightDirectionHandle = glGetUniformLocation(mProgram, "uLightDirection");
-
-    uMatMVPHandle = glGetUniformLocation(mProgram, "u_mat_mvp");
-    return true;
+    return  attributesInitialized && uniformsInitialized;
 }
 
 
@@ -87,21 +75,20 @@ void ChessPyramid::render() const{
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glVertexAttribPointer(aPositionHandle, 3, GL_FLOAT, GL_FALSE, 0,
-                          nullptr);
-    checkGlError("glVertexAttribPointer", LOG_TAG);
-    glEnableVertexAttribArray(aPositionHandle);
-    checkGlError("glEnableVertexAttribArray", LOG_TAG);
+    material->enable();
+    material->populateAttribBuffers();
 
-    glUseProgram(mProgram);
-    checkGlError("glUseProgram", LOG_TAG);
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
+
+    glUniformMatrix4fv(material->getUniformLocation("u_mat_mvp"), 1, GL_FALSE, glm::value_ptr(transform()));
 
 
     unsigned offset{0};
-    glUniform3f(uSquareSizeHandle, 0.2f, 0.06f, 0.2f);
-    glUniform3f(uLightDirectionHandle,glm::cos(glm::radians(30.f)), 1, 1.f);
-    glLineWidth(2.0f);
+    ;
+    glUniform3f(material->getUniformLocation("uSquareSize"), 0.3f, 0.04f, 0.3f);
+
+    auto direction {glm::cos(glm::radians(30.f))};
+    glUniform3f(material->getUniformLocation("uLightDirection"), -direction, -direction, -direction);
+
 
     const GLfloat colors[] = {
             +0.8f, +0.4f, +0.0f, //0
@@ -110,39 +97,45 @@ void ChessPyramid::render() const{
             +0.0f, +0.8f, +0.8f, //3
     };
 
+    auto faceNormalHandler {material->getUniformLocation("uFaceNormal")};
+    auto evenColorHandler {material->getUniformLocation("uEvenColor")};
+    auto oddColorHandler {material->getUniformLocation("uOddColor")};
     for(auto k=0; k< 4; ++k ) {
-        glUniform3f(uFaceNormalHandle, normals[k].x, normals[k].y, normals[k].z);
+        glUniform3f(faceNormalHandler, normals[k].x, normals[k].y, normals[k].z);
         auto colorIndex = 6*(k%2);
-        glUniform3f(uEvenColorHandle, colors[colorIndex], colors[colorIndex+1], colors[colorIndex+2]);
-        glUniform3f(uOddColorHandle, colors[colorIndex+3], colors[colorIndex+4], colors[colorIndex+5]);
+        glUniform3f(evenColorHandler, colors[colorIndex], colors[colorIndex+1], colors[colorIndex+2]);
+        glUniform3f(oddColorHandler, colors[colorIndex+3], colors[colorIndex+4], colors[colorIndex+5]);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, reinterpret_cast<const void *>(offset*sizeof(GLuint)));
         checkGlError("glDrawElements", LOG_TAG);
         offset+=3;
     }
     //render the bottom face
-    glUniform3f(uFaceNormalHandle, 0.f, -1.0, 0.f);
-    auto colorIndex = 0;
-    glUniform3f(uEvenColorHandle, 0.65, 0.28, 12);
-    glUniform3f(uOddColorHandle, 0.95, 0.74,0.25);
+    glUniform3f(faceNormalHandler, 0.f, -1.0, 0.f);
+
+    glUniform3f(evenColorHandler, 0.65, 0.28, 12);
+    glUniform3f(oddColorHandler, 0.95, 0.74,0.25);
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, reinterpret_cast<const void *>(offset*sizeof(GLuint)));
     checkGlError("glDrawElements", LOG_TAG);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDisableVertexAttribArray(aPositionHandle);
-    glUseProgram(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    material->disable();
 }
 
 
 void ChessPyramid::updateState(){
-
+    static float m_rotationAngle{0};
     static const auto TWO_PI{glm::two_pi<float>()};
-    m_rotationAngle += m_delta_angle;
+    static const float m_delta_angle{glm::half_pi<float>()/200.f};
+
+
     if(m_rotationAngle > TWO_PI)
         m_rotationAngle -= TWO_PI;
-    reset_modelview();
-    scale(glm::vec3{0.9f});
-    translate(glm::vec3(-0.3f, -0.2f, 0.3f));
-    rotate(glm::vec3(1.0f, 0.0f, 1.0f), -glm::half_pi<float>()*0.3);
-    rotate(glm::vec3(0.0f, 1.0f, 0.0f), m_rotationAngle);
+    transform.reset();
+    transform.scale(glm::vec3{0.6f});
+    transform.translate(glm::vec3(-0.3f, +0.15f, -0.3f));
+    transform.rotate(-glm::half_pi<float>()*0.3, glm::vec3(1.0f, 0.0f, 1.0f) );
+    transform.rotate(m_rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    m_rotationAngle += m_delta_angle;
 }

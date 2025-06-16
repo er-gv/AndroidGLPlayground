@@ -7,8 +7,8 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <vector>
-#include <glm/glm.hpp>
-#include <glm/vec3.hpp>
+#include "../engine/libs/glm/glm.hpp"
+#include "../engine/libs/glm/vec3.hpp"
 
 #include "../engine/Boundaries.h"
 #include "../engine/lights/DirectionalLight.h"

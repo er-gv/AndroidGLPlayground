@@ -8,52 +8,49 @@
 #include <GLES2/gl2ext.h>
 
 #include <cmath>
+#include <map>
 #include "../Model.h"
 #include "../../logger.h"
+#include "../../engine/materials/Material.h"
 #include "../../engine/shadersBuilder.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
+#include "../../engine/libs/glm/glm.hpp"
+#include "../../engine/libs/glm/gtc/constants.hpp"
 
 class FractalCube: public Model {
-
-    GLuint mProgram{0};
-    GLuint aPositionHandle{0};
-    GLint uColorHandle{-6};
-    GLint uFaceNormalHandle{-6};
-    GLint lightDirectionHandle{-7};
-    GLint uMatMVPHandle{-6};
 
     GLuint VBO{0};
     GLuint EBO{0};
 
 
+    glm::vec2 seedPoint{0.0f, 0.0f};
+    float spectrum[2]{0.0f, 0.0f};
     float m_rotationAngle{0};
     float m_delta_angle{0.8f};
-    glm::mat4 mvp = glm::mat4(1.0f);
 
-    const glm::ivec3 triangleColors[4]{glm::ivec3{0xfc, 0x6a, 0x03},
-                                       glm::ivec3{0xed,0x82, 0x0e},
-                                       glm::ivec3{0xfd,0xa1, 0x72},
-                                       glm::ivec3{0xbe,0x55, 0x04}
+
+    const glm::vec3 normals[6]{
+            glm::vec3{  0.0,  0.0, +1.0},   //front
+            glm::vec3{  0.0,  0.0, -1.0},   //back
+            glm::vec3{ -1.0,  0.0,  0.0},   //left
+            glm::vec3{ +1.0,  0.0,  0.0},    //right
+            glm::vec3{  0.0, +1.0,  0.0},   //top
+            glm::vec3{  0.0, -1.0,  0.0}    //bottom
     };
-
-    const glm::vec3 normals[4]{
-            glm::normalize(glm::cross(glm::vec3{0.75f,-0.8f, +0.75f}, glm::vec3{+0.75f,-0.8f, -0.75f})),
-            glm::normalize(glm::cross(glm::vec3{+0.75f,-0.8f, -0.75f}, glm::vec3{-0.75f,-0.8f, -0.75f})),
-            glm::normalize(glm::cross(glm::vec3{-0.75f,-0.8f, -0.75f}, glm::vec3{-0.75f,-0.8f, +0.75f})),
-            glm::normalize(glm::cross(glm::vec3{-0.75f,-0.8f, +0.75f}, glm::vec3{+0.75f,-0.8f, +0.75f}))
-    };
-
 
     void initGeometry();
-    bool initShader();
+    bool initMaterial();
+
 
 public:
     ~FractalCube() override;
-    FractalCube()=default;
-    virtual bool init();
-    virtual void render() const;
-    virtual void updateState();
+    explicit FractalCube(Material* material);
+    virtual bool init() override;
+    virtual void render() const override;
+    virtual void updateState() override;
+
+    void setSeedPoint(glm::vec2 seed);
+    void setSpectrum(float left, float right);
+
 };
 
 

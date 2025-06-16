@@ -3,10 +3,9 @@
 //
 
 #include "Icosahedron.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
+#include "../../engine/libs/glm/glm.hpp"
+#include "../../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
 
 #include "../../logger.h"
 #define LOG_TAG "ICOSAHEDRON"
@@ -113,7 +112,7 @@ void Icosahedron::render() const {
     glUseProgram(mProgram);
     checkGlError("glUseProgram", LOG_TAG);
 
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
+    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(transform()));
 
     glUniform3f(uSquareSizeHandle, 0.15f, 0.15f, 0.15f);
     glUniform3f(uLightDirectionHandle,glm::cos(glm::radians(30.f)), 1, 1.f);

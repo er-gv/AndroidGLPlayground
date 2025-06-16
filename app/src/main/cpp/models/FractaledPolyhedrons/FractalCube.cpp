@@ -4,59 +4,84 @@
 
 #include "FractalCube.h"
 #include "../../logger.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "../../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
+#include "../../engine/materials/Material.h"
 
 #define LOG_TAG "FRACTAL_CUBE"
 
 FractalCube::~FractalCube(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteProgram(mProgram);
+    delete material;
 }
+
 bool FractalCube::init(){
 
-    initShader();
     initGeometry();
-
-    return true;
+    return initMaterial();
 }
 
 
-bool FractalCube::initShader(){
-    auto gVertexShader = "shaders/monochrome_with_normals/vertex.glsl";
-    auto gFragmentShader = "shaders/monochrome_with_normals/fragment.glsl";
+bool FractalCube::initMaterial() {
 
-    mProgram = ShadersBuilder::buildGLProgram(gVertexShader, gFragmentShader);
-    if (!mProgram) {
-        log_error(LOG_TAG,"Could not create program.");
-        return false;
+    const char* textureName{"texture/bumpy_bricks_public_domain.jpg"};
+    auto texture = loadTextureFromAsset(textureName);
+    material->addTexture(texture);
+
+    auto attributesInitialized = material->addAttributes(std::vector<std::tuple< const char*, GLsizei, GLsizei>> {
+            {"a_Position", 3, 0},
+    });
+    auto uniformsInitialized = material->addUniforms(std::vector<const char*>{
+            "u_juliaSeedPoint", "u_matMVP", "u_matMVP", "u_matMVP"
+            /*, "u_MVMatrix",  "u_NormalsMatrix",
+            "u_faceNormal",    "u_LightPos",
+            "u_Spectrum", "u_SpectrumCoords", "u_juliaSeedPoint"*/
+    });
+
+    return uniformsInitialized && attributesInitialized;
+
+
+
+ /*   {
+        auto pos{glGetUniformLocation(material->glProgram, "u_MVPMatrix")};
+        log_debug(LOG_TAG, "uniform %s is %d", "u_MVPMatrix", pos);
     }
-    aPositionHandle = glGetAttribLocation(mProgram, "aPosition");
-    checkGlError("glGetAttribLocation", LOG_TAG);
-    log_info(LOG_TAG,"glGetAttribLocation(\"aPosition\") = %d\n", aPositionHandle);
+    {
+        auto pos{glGetUniformLocation(material->glProgram, "u_MVMatrix")};
+        log_debug(LOG_TAG, "uniform %s is %d", "u_MVMatrix", pos);
+    }
+    {
+        auto pos{glGetUniformLocation(material->glProgram, "u_LightPos")};
+        log_debug(LOG_TAG, "uniform %s is %d", "u_LightPos", pos);
+    }
 
-    uColorHandle = glGetUniformLocation(mProgram, "uColor");
-    checkGlError("glGetUniformLocation", LOG_TAG);
-    log_info(LOG_TAG, "glGetUniformLocation(\"uColor\") = %d\n", uColorHandle);
+    {
+        auto pos{glGetUniformLocation(material->glProgram, "u_Spectrum")};
+        log_debug(LOG_TAG, "uniform %s is %d", "u_Spectrum", pos);
+    }
+    {
+        auto pos{glGetUniformLocation(material->glProgram, "u_SpectrumCoords")};
+        log_debug(LOG_TAG, "uniform %s is %d","u_SpectrumCoords", pos);
+    }
+    {
+        auto pos{glGetUniformLocation(material->glProgram, "u_juliaSeedPoint")};
+        log_debug(LOG_TAG, "uniform %s is %d","u_juliaSeedPoint", pos);
+    }
+*/
 
-
-    uFaceNormalHandle = glGetUniformLocation(mProgram, "uFaceNormal");
-    lightDirectionHandle = glGetUniformLocation(mProgram, "lightDirection");
-
-    uMatMVPHandle = glGetUniformLocation(mProgram, "u_mat_mvp");
-    return true;
+    return uniformsInitialized && attributesInitialized;
 }
 
 
 void FractalCube::initGeometry(){
 
     const GLfloat triangleVertices[] = {
-            +0.0f, +0.4f, +0.0f, //0
-            -0.5f, -0.6f, +0.5f, //1
-            +0.5f, -0.6f, +0.5f, //2
-            +0.5f, -0.6f, -0.5f, //3
-            -0.5f, -0.6f, -0.5f //4
+            +0.0f, +0.4f, +0.0f, 1.0,//0
+            -0.5f, -0.6f, +0.5f, 1.0,//1
+            +0.5f, -0.6f, +0.5f, 1.0,//2
+            +0.5f, -0.6f, -0.5f, 1.0,//3
+            -0.5f, -0.6f, -0.5f, 1.0,//4
     };
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -84,39 +109,32 @@ void FractalCube::render() const{
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glVertexAttribPointer(aPositionHandle, 3, GL_FLOAT, GL_FALSE, 0,
-                          nullptr);
-    checkGlError("glVertexAttribPointer", LOG_TAG);
-    glEnableVertexAttribArray(aPositionHandle);
-    checkGlError("glEnableVertexAttribArray", LOG_TAG);
+    material->populateAttribBuffers();
+    material->enable();
 
-    glUseProgram(mProgram);
-    checkGlError("glUseProgram", LOG_TAG);
-
-    //glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.3f, -6.3f))
-    //modelview = glm::scale(modelview, glm::vec3(0.75f, 0.75f, 0.75f));
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(modelview));
+    glUniformMatrix4fv(material->getUniformLocation("u_matMVP"), 1, GL_FALSE, glm::value_ptr(transform()));
     glm::vec3 light(0,0, -1);
-    glUniform3fv(lightDirectionHandle, 3, glm::value_ptr(light));
+    glUniform3fv(material->getUniformLocation("u_LightPos"), 3, glm::value_ptr(light));
+
+
 
     unsigned offset{0};
+    glUniform2f(material->getUniformLocation("u_SpectrumCoords"), spectrum[0], spectrum[1]);
+    glUniform2f(material->getUniformLocation("u_juliaSeedPoint"), seedPoint.x, seedPoint.y);
+    glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
+    glBindTexture(GL_TEXTURE_2D, material->getTexture(0));
+    glUniform1i(material->getUniformLocation("u_Spectrum"), 0);
 
-
-    glLineWidth(2.0f);
-
-
-    for(auto k=0; k< 4; ++k ) {
-        glUniform3i(uColorHandle, triangleColors[k].r, triangleColors[k].g, triangleColors[k].b);
-        glUniform3f(uFaceNormalHandle, normals[k].x, normals[k].y, normals[k].z);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, reinterpret_cast<const void *>(offset*sizeof(GLuint)));
+    for(auto k=0; k< 6; ++k ) {
+        glUniform3f(material->getUniformLocation("u_faceNormal"), normals[k].x, normals[k].y, normals[k].z);
+        glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, reinterpret_cast<const void *>(offset*sizeof(GLuint)));
         checkGlError("glDrawElements", LOG_TAG);
-        offset+=3;
+        offset+=4;
     }
 
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDisableVertexAttribArray(aPositionHandle);
-    glUseProgram(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    material->disable();
 
 }
 
@@ -125,10 +143,22 @@ void FractalCube::updateState(){
     m_rotationAngle += m_delta_angle;
     if(m_rotationAngle > 360)
         m_rotationAngle -= 360;
-    reset_modelview();
-    translate(glm::vec3(0.0f, 0.3f, -.3f));
-    scale(glm::vec3(0.6f, 1.0f, 0.6f));
-    rotate(glm::vec3(0.0f, 1.0f, 1.0f), glm::radians(m_rotationAngle));
+    transform.reset();
+    transform.translate(glm::vec3(0.0f, 0.3f, -.3f));
+    transform.scale(glm::vec3(0.6f, 1.0f, 0.6f));
+    transform.rotate(glm::radians(m_rotationAngle), glm::vec3(0.0f, 1.0f, 1.0f));
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
 }
+
+
+void FractalCube::setSeedPoint(glm::vec2 seed){
+
+}
+
+void FractalCube::setSpectrum(float left, float right){
+
+}
+
+FractalCube::FractalCube(Material *material) : Model(material) {}
+

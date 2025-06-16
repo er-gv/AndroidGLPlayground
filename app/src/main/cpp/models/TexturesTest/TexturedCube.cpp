@@ -1,0 +1,147 @@
+//
+// Created by erez on 14/06/2025.
+//
+
+#include "TexturedCube.h"
+
+#include "../../logger.h"
+#include "../../engine/libs/glm/gtc/matrix_transform.hpp"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
+
+#define LOG_TAG "FRACTAL_CUBE"
+
+TexturedCube::~TexturedCube(){
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    delete material;
+}
+
+bool TexturedCube::init(){
+
+    initMaterial();
+    initGeometry();
+
+    return true;
+}
+
+bool TexturedCube::initMaterial(){
+
+    material->generateTextures({"texture/spectrum.jpg",
+                                "texture/spectrum.jpg"});
+
+    auto attributesInitialized = material->addAttributes(std::vector<std::tuple< const char*, GLsizei, GLsizei>> {
+            {"a_Position", 3, 0}, {"a_TexCoordinate", 2, 3},
+    });
+
+    auto uniformsInitialized = material->addUniforms(std::vector<const char*>{
+            "u_Texture", "u_MVPMatrix"/*, "u_faceNormal"*/
+    });
+    //material->logUniforms();
+
+    return  attributesInitialized && uniformsInitialized;
+
+}
+
+
+void TexturedCube::initGeometry(){
+
+    const GLfloat triangleVertices[] = {
+            // geometry XYZ - Tex UV
+
+            //front face
+            -1.f,  -1.f,  +1.f,   0.f, 0.f, //4
+            +1.f,  -1.f,  +1.f,   1.f, 0.f,//5
+            -1.f,  +1.f, +1.f,  0.f, 1.f,//6
+            +1.f,  +1.f, +1.f,  1.f, 1.f,//7
+
+
+            //back face
+            +1.f,  -1.f,  -1.f,   1.f, 0.f, //0
+            -1.f,  -1.f,  -1.f,   0.f, 0.f,//1
+            +1.f,  +1.f, -1.f,  1.f, 1.f,//2
+             -1.f, +1.f, -1.f,  0.f, 1.f,//3
+
+
+            +1.f,  -1.f,  -1.f,   0.f, 0.f,//5
+            +1.f,  -1.f,  +1.f,   0.f, 1.f, //0
+            +1.f, +1.f, -1.f,  1.f, 0.f,//3
+            +1.f,  +1.f, +1.f,  1.f, 1.f,//6
+
+             -1.f,  -1.f,  -1.f,   1.f, 0.f,//1
+             -1.f,  -1.f,  +1.f,   0.f, 0.f, //4
+             -1.f, +1.f, -1.f,  1.f, 1.f,//7
+             -1.f,  +1.f, +1.f,  0.f, 1.f,//2
+
+
+
+
+
+    };
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
+
+void TexturedCube::render() const{
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    material->populateAttribBuffers();
+
+
+    material->enable();
+
+    auto uMatMVPHandle = material->getUniformLocation("u_MVPMatrix");
+    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(transform()));
+
+    glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
+    glBindTexture(GL_TEXTURE_2D, material->getTexture(0));
+    glActiveTexture(GL_TEXTURE1); // Activate texture unit 1
+    glBindTexture(GL_TEXTURE_2D, material->getTexture(1));
+
+    //face normals
+    const glm::vec3 faceNormals[] = {
+            glm::vec3{0,0,1},// front
+            glm::vec3{0,0,-1}, // back
+            glm::vec3{1,0,0}, // right
+            glm::vec3{-1,0,0}, // left
+            glm::vec3{0,1,0}, // top
+            glm::vec3{0,-1,0} // bottom
+    };
+
+    auto stride{material->getVertexStride()};
+    for(auto k=0; k< 3; ++k) {
+        auto uSampler2DHandle = material->getUniformLocation("u_Texture");
+        glUniform1i(uSampler2DHandle, k%2);
+        glDrawArrays(GL_TRIANGLE_STRIP, 4*k, 4);
+        checkGlError("glDrawArrays", LOG_TAG);
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    material->disable();
+
+}
+
+void TexturedCube::updateState(){
+
+
+    static const auto TWO_PI{glm::two_pi<float>()};
+
+    m_rotationAngle += 0.64*m_delta_angle;
+    if(m_rotationAngle > TWO_PI)
+        m_rotationAngle -= TWO_PI;
+    transform.reset();
+    transform.scale(glm::vec3(0.45f));
+    transform.translate(glm::vec3(0.0f, -0.3f, -.3f));
+    transform.scale(glm::vec3(0.6f, 1.0f, 0.6f));
+    transform.rotate(m_rotationAngle, glm::vec3(1.0f, 1.0f, 0.0f));
+    //transform.rotate(glm::pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+}
+
+TexturedCube::TexturedCube(Material *tex) : Model(tex) {
+
+}

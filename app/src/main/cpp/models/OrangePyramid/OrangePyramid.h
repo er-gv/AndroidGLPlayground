@@ -6,7 +6,7 @@
 #include "../Model.h"
 #include <GLES2/gl2.h>
 
-class ChessPyramid : public Model {
+class OrangePyramid : public Model {
 
     GLuint mProgram{0};
     GLuint aPositionHandle{0};
@@ -20,8 +20,6 @@ class ChessPyramid : public Model {
 
 
     float m_rotationAngle{0};
-    float m_delta_angle{0.8f};
-    glm::mat4 mvp = glm::mat4(1.0f);
 
     const glm::ivec3 triangleColors[4]{glm::ivec3{0xfc, 0x6a, 0x03},
                                        glm::ivec3{0xed,0x82, 0x0e},
@@ -41,9 +39,9 @@ class ChessPyramid : public Model {
     bool initShader();
 
 public:
-    ~ChessPyramid() override;
-    ChessPyramid()=default;
-    virtual bool init();
-    virtual void render() const;
-    virtual void updateState();
+    ~OrangePyramid() override;
+    OrangePyramid()=default;
+    virtual bool init() override;
+    virtual void render() const override;
+    virtual void updateState() override;
 };

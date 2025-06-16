@@ -4,6 +4,15 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.opengl.GLSurfaceView
 import android.util.Log
+
+import com.ergv.gles.playground.scenes.AbstractScene
+import com.ergv.gles.playground.scenes.ChessAndBricksSceneLib
+import com.ergv.gles.playground.scenes.FractalPolyhedronsSceneLib
+import com.ergv.gles.playground.scenes.MonochromaticModels
+import com.ergv.gles.playground.scenes.QuantizedPolyhedronsSceneLib
+import com.ergv.gles.playground.scenes.TexturedModelsSceneLib
+
+
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.egl.EGLContext
@@ -294,7 +303,7 @@ class GLSceneView : GLSurfaceView {
     }
 
     private class Renderer : GLSurfaceView.Renderer {
-        var mJNIRenderer: AbstractJNILib
+        var mJNIRenderer: AbstractScene
 
         constructor(scene_tag: String){
             when (scene_tag) {
@@ -306,6 +315,9 @@ class GLSceneView : GLSurfaceView {
                 }
                 "Bricks" -> {
                     mJNIRenderer = ChessAndBricksSceneLib()
+                }
+                "Textures" -> {
+                    mJNIRenderer = TexturedModelsSceneLib()
                 }
                 else -> {
                     mJNIRenderer = MonochromaticModels()

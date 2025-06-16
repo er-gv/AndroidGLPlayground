@@ -15,9 +15,10 @@ out vec4 fragColor;
 
 void main() {
     vec3 v = floor(vPosition/uSquareSize);
+    mat3 normals_mat = mat3(u_mat_mvp);
     bool oddity = (0==((1&int(v.x))+(1&int(v.y))+(1&int(v.z)))%2);
     vec3 color = (oddity ? uEvenColor : uOddColor);
-    vec3 tface = vec3(u_mat_mvp*vec4(uFaceNormal, 1.0));
-    float lightFactor = clamp(dot(-uLightDirection,uFaceNormal), 0.6, 1.0);
+    vec3 tface = vec3(inverse(transpose(normals_mat))*uFaceNormal);
+    float lightFactor = clamp(dot(-uLightDirection,tface), 0.01, 1.0);
     fragColor = vec4(lightFactor*color, 1.0);//lightFactor*color, 1.0);
 }
