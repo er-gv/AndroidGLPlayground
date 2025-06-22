@@ -14,6 +14,7 @@
 #include "../engine/lights/DirectionalLight.h"
 #include "../exclude_from_build/PointLight.h"
 #include "../models/Model.h"
+#include "../engine/lights/environmentLight.h"
 //#include "../exclude_from_build/Camera.h"
 
 class Scene{
@@ -23,6 +24,7 @@ class Scene{
     //std::map<unsigned , light&> lights;
     //PointLight pointLight;
     DirectionalLight directionalLight;
+    EnvironmentLight enviromentLight;
     Boundaries boundaries;
     glm::vec3 clearColor;
 
@@ -47,6 +49,7 @@ public:
     void reset();
 
     void addDirectionalLight(const DirectionalLight& light);
+    void setEnvironmentLight(const EnvironmentLight &light){ enviromentLight=light;}
     //void addPointLight(const PointLight& light);
 };
 

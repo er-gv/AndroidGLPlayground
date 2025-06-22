@@ -41,7 +41,7 @@ private:
     bool initMaterial();
 
 public:
-    QuantizedCube() = default;
+    QuantizedCube(const Scene&, Material* material);
     ~QuantizedCube();
     bool init() override;
     void updateState() override;

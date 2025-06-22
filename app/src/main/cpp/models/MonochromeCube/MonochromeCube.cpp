@@ -14,6 +14,7 @@
 #include "../../logger.h"
 #define LOG_TAG "MONOCHROMATIC_CUBE"
 
+MonochromeCube::MonochromeCube(const Scene& scene, Material *material) : Model{scene, material}{}
 MonochromeCube::~MonochromeCube(){
     glDeleteBuffers(1, &vbo);
     //glDeleteBuffers(1, &EBO);
@@ -110,7 +111,7 @@ void MonochromeCube::render() const {
     //mvp = glm::translate(mvp, glm::vec3(1.60f, 0.2f, 0.0f));
 
 
-    glUniformMatrix4fv(u_matMVP, 1, GL_FALSE, glm::value_ptr(transform()));
+    glUniformMatrix4fv(u_matMVP, 1, GL_FALSE, glm::value_ptr(m_transform()));
 
     const glm::vec3 colors[]{
         glm::vec3{0.9f, 0.2f, 0.3f},
@@ -148,10 +149,10 @@ void MonochromeCube::updateState() {
 
     if(m_rotationAngle > TWO_PI)
         m_rotationAngle -= TWO_PI;
-    transform.reset();
-    transform.translate(glm::vec3(1.60f, 1.3f, 0.0f));
-    transform.scale(glm::vec3{0.35f});
-    transform.rotate(m_rotationAngle, glm::vec3{0.0f, 1.0f, 0.0f});
+    m_transform.reset();
+    m_transform.translate(glm::vec3(1.60f, 1.3f, 0.0f));
+    m_transform.scale(glm::vec3{0.35f});
+    m_transform.rotate(m_rotationAngle, glm::vec3{0.0f, 1.0f, 0.0f});
 
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
 

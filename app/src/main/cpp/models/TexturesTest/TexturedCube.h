@@ -12,7 +12,7 @@
 #include "../../engine/libs/glm/glm.hpp"
 #include "../../engine/libs/glm/gtc/constants.hpp"
 
-class TexturedCube: public Model {
+class FractalCube: public Model {
 
     GLuint VBO{0};
     GLuint EBO{0};
@@ -25,8 +25,8 @@ class TexturedCube: public Model {
     bool initMaterial();
 
 public:
-    ~TexturedCube() override;
-    explicit TexturedCube(Material* tex);
+    ~FractalCube() override;
+    FractalCube(const Scene&, Material* material);
     bool init() override;
     void render() const override;
     void updateState() override;

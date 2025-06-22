@@ -13,7 +13,7 @@ static Scene scene;
 bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@quantizeModelsScene::setupGraphics(%d, %d)", w, h);
     scene.reset();
-    auto* fractalCube = new QuantizedCube();
+    auto* fractalCube = new QuantizedCube(scene, nullptr);
     fractalCube->init();
     scene.addModel(fractalCube);
     scene.setClearColor(glm::vec3{0.1f, 0.6f, 0.85f});

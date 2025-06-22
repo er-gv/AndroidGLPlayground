@@ -11,22 +11,27 @@
 #include "../engine/libs/glm/glm.hpp"
 #include "../engine/libs/glm/gtc/matrix_transform.hpp"
 #include "../engine/libs/glm/gtc/type_ptr.hpp"
+//#include "../scenes/Scene.h"
 
+class Scene;
 
 class Model {
-    friend class Scene;
+
 public:
-    virtual ~Model() {if (material) delete material;};
-    explicit Model() : material{nullptr} {}
-    explicit Model(Material *material) : material{material} {}
+    virtual ~Model() { delete p_material;};
+    explicit Model(const Scene& scene, Material *material) :  parentScene{scene}, p_material{material} {}
     virtual bool init() = 0;
     virtual void render() const = 0;
     virtual void updateState() = 0;
+    Transform& transform() {return m_transform;}
+    const Material* material() const {return p_material;}
 
 protected:
-    Transform transform;
+    const Scene& parentScene;
+    Transform m_transform;
     glm::vec3 pivot{0};
-    Material* material;
+    Material* p_material;
+
 
     inline void setPivot(glm::vec3 &p){pivot = p;}
 

@@ -21,11 +21,6 @@ private:
 
     GLint uColorHandle{0};
     GLint u_matMVP{0};
-    //GLint u_matMV{0};
-    //GLint uNormalHandle{0};
-    //GLint uMatMVHandle{0};
-    //GLint uMatMVPHandle{0};
-    //GLint uTexHandle{0};
 
     GLuint vbo{0};
     GLuint ebo{0};
@@ -33,7 +28,7 @@ private:
 
 
 public:
-    MonochromeCube() = default;
+    MonochromeCube(const Scene&, Material* material);
     ~MonochromeCube() override;
     bool init() override;
     void updateState() override;

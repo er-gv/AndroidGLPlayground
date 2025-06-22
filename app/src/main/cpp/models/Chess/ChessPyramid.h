@@ -26,7 +26,7 @@ class ChessPyramid : public Model {
 
 public:
     ~ChessPyramid() override;
-    ChessPyramid(Material* material): Model(material) {};
+    ChessPyramid(const Scene& scene, Material* material);
     bool init() override;
     void render() const override;
     void updateState() override;

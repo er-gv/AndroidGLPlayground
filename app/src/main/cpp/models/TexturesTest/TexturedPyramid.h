@@ -27,7 +27,7 @@ class TexturedPyramid: public Model {
 
 public:
     ~TexturedPyramid() override;
-    explicit TexturedPyramid(Material* tex);
+    TexturedPyramid(const Scene&, Material* material);
     bool init() override;
     void render() const override;
     void updateState() override;

@@ -37,7 +37,7 @@ bool initShader();
 
 public:
 ~Icosahedron() override;
-Icosahedron()=default;
+explicit Icosahedron(const Scene&, Material* material);
 virtual bool init();
 virtual void render() const;
 virtual void updateState();

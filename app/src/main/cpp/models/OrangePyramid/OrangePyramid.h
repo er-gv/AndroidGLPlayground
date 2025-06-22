@@ -40,7 +40,7 @@ class OrangePyramid : public Model {
 
 public:
     ~OrangePyramid() override;
-    OrangePyramid()=default;
+    OrangePyramid(const Scene&, Material* material);
     virtual bool init() override;
     virtual void render() const override;
     virtual void updateState() override;

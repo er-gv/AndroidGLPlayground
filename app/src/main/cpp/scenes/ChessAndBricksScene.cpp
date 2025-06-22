@@ -19,8 +19,8 @@ bool setupGraphics(int w, int h) {
     scene.reset();
     scene.addDirectionalLight(DirectionalLight());
     Material* chessMaterial = Material::materialBuilder("shaders/chess/vertex.glsl", "shaders/chess/fragment.glsl");
-    auto* cube = new ChessCube(Material::materialBuilder("shaders/chess/vertex.glsl", "shaders/chess/fragment.glsl"));
-    auto* pyramid = new ChessPyramid(Material::materialBuilder("shaders/chess/vertex.glsl", "shaders/chess/fragment.glsl"));
+    auto* cube = new ChessCube(scene, Material::materialBuilder("shaders/chess/vertex.glsl", "shaders/chess/fragment.glsl"));
+    auto* pyramid = new ChessPyramid(scene, Material::materialBuilder("shaders/chess/vertex.glsl", "shaders/chess/fragment.glsl"));
 
     cube->init();
     pyramid->init();
