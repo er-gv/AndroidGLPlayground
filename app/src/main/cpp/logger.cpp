@@ -9,7 +9,7 @@
 
 
 
-void log_entry(const int priority, const std::string& tag, const char* messageTemplate, ...) {
+void log_entry(const int priority, const char* tag, const char* messageTemplate, ...) {
     va_list args;
     va_start(args, messageTemplate);
 
@@ -20,7 +20,7 @@ void log_entry(const int priority, const std::string& tag, const char* messageTe
     va_end(argsCopy);
 
     if (size < 0) {
-        __android_log_print(ANDROID_LOG_ERROR, tag.c_str(), "Error in formatting log message.");
+        __android_log_print(ANDROID_LOG_ERROR, tag, "Error in formatting log message.");
         va_end(args);
         return;
     }
@@ -34,7 +34,7 @@ void log_entry(const int priority, const std::string& tag, const char* messageTe
 
 
     // Log the formatted message.
-    __android_log_print(priority, tag.c_str(), "%s", formattedMessage.c_str());
+    __android_log_print(priority, tag, "%s", formattedMessage.c_str());
 }
 
 

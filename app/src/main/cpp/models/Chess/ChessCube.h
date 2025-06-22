@@ -17,8 +17,6 @@
 class ChessCube : public Model{
 private:
 
-    Material* material;
-
     GLuint VBO{0};
     GLuint EBO{0};
 
@@ -26,7 +24,7 @@ private:
 
 
 public:
-    explicit ChessCube(Material* material);
+    explicit ChessCube(const Scene&, Material* material);
     ~ChessCube() override;
     bool init() override;
     void updateState() override;

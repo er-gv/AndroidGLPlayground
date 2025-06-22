@@ -17,8 +17,8 @@ bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@monochromaticColorsScene::setupGraphics(%d, %d)", w, h);
     scene.reset();
     scene.addDirectionalLight(DirectionalLight());
-    auto* monochromeCube = new MonochromeCube();
-    auto* orangePyramid = new OrangePyramid();
+    auto* monochromeCube = new MonochromeCube(scene, nullptr);
+    auto* orangePyramid = new OrangePyramid(scene, nullptr);
     monochromeCube->init();
     orangePyramid->init();
     scene.addModel(monochromeCube);

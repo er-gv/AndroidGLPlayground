@@ -8,6 +8,7 @@
 #include <GLES2/gl2ext.h>
 #include <map>
 #include <tuple>
+#include <cstring>
 #include "../texturesFactory.h"
 
 struct VertexAttribute {
@@ -16,15 +17,17 @@ struct VertexAttribute {
     GLsizei offset;
 };
 
-typedef std::tuple<const char*, GLsizei, GLsizei> Attrib;
+typedef std::tuple<const std::string&, GLsizei, GLsizei> Attrib;
+
 
 class Material {
 
     GLuint glProgram;
 
     explicit Material(GLuint glProgram) : glProgram(glProgram){};
-    std::map<const char*,  VertexAttribute> attribLocations;
-    std::map<const char*, GLint> uniformLocations;
+
+    std::map<const std::string,  VertexAttribute> attribLocations;
+    std::map<const std::string, GLint> uniformLocations;
     std::vector<GLuint> textures;
 
     //glm::vec3 baseColor;
@@ -38,24 +41,27 @@ class Material {
 public:
 
     ~Material();
-    static Material* materialBuilder(const char*  vertexShaderSrc, const char* fragmentShaderSrc);
+    static Material* materialBuilder(const char* vertexShaderSrc, const char* fragmentShaderSrc);
 
 
-    bool addAttributes(const std::vector<std::tuple<const char*, GLsizei, GLsizei>>& atribs);
-    bool addAttribute(const std::tuple<const char*, GLsizei, GLsizei>& attrib);
+    bool addAttributes(const std::vector<std::tuple<const std::string&, GLsizei, GLsizei>>& atribs);
+    bool addAttribute(const std::tuple<const std::string&, GLsizei, GLsizei>& attrib);
 
-    bool addUniforms(const std::vector<const char*>& uniforms);
-    bool addUniform(const char* uniformName);
+    bool addUniforms(const std::vector<const std::string>& uniforms);
+    bool addUniform(const std::string&);
 
-    bool generateTextures(const std::vector<const char*>& textures);
-    bool addTexture(GLuint textureUnit);
-    GLuint getTexture(const GLuint idx) const;
+    void generateTextures(const std::vector<const char*>& textures);
+    void addTexture(GLuint textureUnit);
+    GLuint getTexture(GLuint idx) const;
 
 
-    GLint getUniformLocation(const char* uniformName) const;
-    GLuint getAttribLocation(const char* attribName) const;
-    GLint getAttribSize(const char* attribName) const;
-    GLint getAttribOffset(const char* attribName) const;
+    GLint getUniformLocation(const std::string& uniformName) const;
+    GLuint getAttribLocation(const std::string& attribName) const;
+    GLint getAttribSize(const std::string& attribName) const;
+
+    bool setProperty(const std::string& property, float value) const;
+    bool setProperty(const std::string& property, const glm::vec2& value) const;
+    bool setProperty(const std::string& property, const glm::vec3& value) const;
 
 
     GLsizei getVertexStride() const;

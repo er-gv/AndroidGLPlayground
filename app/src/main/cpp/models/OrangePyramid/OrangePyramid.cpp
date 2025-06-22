@@ -8,6 +8,7 @@
 #include "../../engine/libs/glm/gtc/type_ptr.hpp"
 #define LOG_TAG "FRACTAL_CUBE"
 
+OrangePyramid::OrangePyramid(const Scene &scene, Material* material) : Model{scene, material}{}
 OrangePyramid::~OrangePyramid(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -92,7 +93,7 @@ void OrangePyramid::render() const{
 
     glUseProgram(mProgram);
     checkGlError("glUseProgram", LOG_TAG);
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(transform()));
+    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(m_transform()));
     glm::vec3 light(0,0, -1);
     glUniform3fv(lightDirectionHandle, 3, glm::value_ptr(light));
 
@@ -120,10 +121,10 @@ void OrangePyramid::updateState(){
 
     if(m_rotationAngle > TWO_PI)
         m_rotationAngle -= TWO_PI;
-    transform.reset();
-    transform.scale(glm::vec3{0.7f});
-    transform.translate(glm::vec3(-0.4f, -0.2f, -0.3f));
-    transform.rotate(m_rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_transform.reset();
+    m_transform.scale(glm::vec3{0.7f});
+    m_transform.translate(glm::vec3(-0.4f, -0.2f, -0.3f));
+    m_transform.rotate(m_rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
     m_rotationAngle += m_delta_angle;
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
 

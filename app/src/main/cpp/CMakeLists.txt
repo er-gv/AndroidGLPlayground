@@ -244,6 +244,7 @@ target_include_directories(scenes
 )
 target_link_libraries(scenes
 #        camera
+        materials
         logger
         android
         lights

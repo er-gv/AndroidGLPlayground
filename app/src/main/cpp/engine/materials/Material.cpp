@@ -14,30 +14,24 @@
 
 
 Material::~Material(){
-    for (auto& attrib: attribLocations)
-        delete attrib.first;
-    for (auto& uniform: uniformLocations)
-        delete uniform.first;
-
     attribLocations.clear();
     uniformLocations.clear();
     textures.clear();
 }
 
-bool Material::addUniforms(const std::vector<const char*>& uniforms){
-    for(auto uniform: uniforms){
+bool Material::addUniforms(const std::vector<const std::string>& uniforms){
+    for(auto& uniform: uniforms){
         if (!addUniform(uniform))
             return false;
     }
     return true;
 }
 
-bool Material::addUniform(const char* uniformName){
-    GLint loc = glGetUniformLocation(glProgram, uniformName);
-
+bool Material::addUniform(const std::string& uniformName){
+    GLint loc = glGetUniformLocation(glProgram, uniformName.c_str());
     auto gotErrors = checkGlError("glGetUniformLocation", LOG_TAG);
     if((-1 == loc) || gotErrors){
-        log_error("cant find uniform %s in shader.", uniformName);
+        log_error("cant find uniform %s in shader.", uniformName.c_str());
         return false;
     }
     uniformLocations[uniformName] =loc;
@@ -45,44 +39,40 @@ bool Material::addUniform(const char* uniformName){
 }
 
 
-bool Material::addAttributes(const std::vector<std::tuple<const char*, GLsizei, GLsizei>>& attribs){
+bool Material::addAttributes(const std::vector<std::tuple<const std::string&, GLsizei, GLsizei>>& attribs){
     return all_of(attribs.begin(), attribs.end(),
                   [this](auto& attrib){
                         return addAttribute(attrib);
     });
 }
 
-bool Material::addAttribute(const std::tuple<const char*, GLsizei, GLsizei>& attrib){
-    auto* name = std::get<0>(attrib);
-    GLuint loc = glGetAttribLocation(glProgram, name);
+bool Material::addAttribute(const std::tuple<const std::string&, GLsizei, GLsizei>& attrib){
+    auto name = std::get<0>(attrib);
+    GLuint loc = glGetAttribLocation(glProgram, name.c_str());
     auto gotErrors = checkGlError("glGetAttribLocation", LOG_TAG);
     if(gotErrors){
-        log_error("cant find attribute %s in shader.", name);
+        log_error("cant find attribute %s in shader.", name.c_str());
         return false;
     }
-    VertexAttribute va;
-    va.size=std::get<1>(attrib);
-    va.offset=std::get<2>(attrib);
-    va.position=loc;
+    VertexAttribute va{loc, std::get<1>(attrib), std::get<2>(attrib)};
     attribLocations[name] = va;
     return true;
 }
 
 
-bool Material::generateTextures(const std::vector<const char*>& textures){
-    return all_of(textures.begin(), textures.end(),
-                  [&](auto& texture){
-                        auto textureID =loadTextureFromAsset(texture);
-                        return addTexture(textureID);
-                  });
+void Material::generateTextures(const std::vector<const char*>& vec){
+
+    for(const auto& texture_name: vec){
+        auto textureID = loadTextureFromAsset(texture_name);
+        addTexture(textureID);
+    }
 }
 
-bool Material::addTexture(GLuint textureUnit){
+void Material::addTexture(GLuint textureUnit){
     textures.push_back(textureUnit);
-    return true;
 }
 
-GLuint Material::getTexture(const GLuint idx) const{
+GLuint Material::getTexture(GLuint idx) const{
     if (idx < textures.size())
         return textures[idx];
     else{
@@ -93,7 +83,7 @@ GLuint Material::getTexture(const GLuint idx) const{
 
 
 
-GLint Material::getUniformLocation(const char* uniformName) const{
+GLint Material::getUniformLocation(const std::string& uniformName) const{
     auto it = uniformLocations.find(uniformName);
     if(it == uniformLocations.end()){
         std::string msg {"No uniform "};
@@ -101,6 +91,35 @@ GLint Material::getUniformLocation(const char* uniformName) const{
         throw std::runtime_error(msg);
     }
     return it->second;
+}
+
+
+bool Material::setProperty(const std::string& property, float value) const{
+    auto result = true;
+    auto handler{getUniformLocation(property)};
+    if(handler >= 0)
+        glUniform1f(handler, value);
+    else result=false;
+
+    return result;
+}
+
+bool Material::setProperty(const std::string& property, const glm::vec2& value) const{
+    auto result = true;
+    auto handler{getUniformLocation(property)};
+    if(handler >= 0)
+        glUniform2f(handler, value.x, value.y);
+    else result=false;
+    return result;
+}
+
+bool Material::setProperty(const std::string& property, const glm::vec3& value) const{
+    auto result = true;
+    auto handler{getUniformLocation(property)};
+    if(handler >= 0)
+        glUniform3f(handler, value.x, value.y, value.z);
+    else result=false;
+    return result;
 }
 
 void Material::populateAttribBuffers() const{
@@ -119,7 +138,7 @@ void Material::populateAttribBuffers() const{
     }
 }
 
-GLuint Material::getAttribLocation(const char* attribName) const{
+GLuint Material::getAttribLocation(const std::string& attribName) const{
     auto it = attribLocations.find(attribName);
     if(it == attribLocations.end()){
         std::string msg {"No attribute "};
@@ -130,7 +149,7 @@ GLuint Material::getAttribLocation(const char* attribName) const{
     return attribLocation;
 }
 
-GLsizei Material::getAttribSize(const char* attribName) const{
+GLsizei Material::getAttribSize(const std::string& attribName) const{
     auto it = attribLocations.find(attribName);
     if(it == attribLocations.end()){
         std::string msg {"No attribute "};

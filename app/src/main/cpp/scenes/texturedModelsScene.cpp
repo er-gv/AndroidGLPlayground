@@ -17,8 +17,8 @@ static Scene scene;
 bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@FractalPolyhedronsScene::setupGraphics(%d, %d)", w, h);
     scene.reset();
-    //auto* texturedPyramid = new TexturedPyramid(Material::materialBuilder("shaders/hello_texture/vertex.glsl", "shaders/hello_texture/fragment.glsl"));
-    auto* texturedCube = new TexturedCube(Material::materialBuilder("shaders/hello_texture/vertex.glsl", "shaders/hello_texture/fragment.glsl"));
+    //auto* texturedPyramid = new TexturedPyramid(scene, Material::materialBuilder("shaders/hello_texture/vertex.glsl", "shaders/hello_texture/fragment.glsl"));
+    auto* texturedCube = new FractalCube(scene, Material::materialBuilder("shaders/hello_texture/vertex.glsl", "shaders/hello_texture/fragment.glsl"));
 
     texturedCube->init();
     //texturedPyramid->init();
@@ -26,6 +26,7 @@ bool setupGraphics(int w, int h) {
     //scene.addModel(texturedPyramid);
     scene.setClearColor(glm::vec3{0.25f});
     scene.addDirectionalLight(DirectionalLight{glm::vec3{0.f, -1.f, -1.f}, glm::vec3{0.f, 0.8f, 0.2f}});
+    scene.setEnvironmentLight(EnvironmentLight{glm::vec3{1.0, 1.0, 0.f}, 0.5f});
     scene.setViewPort(w, h);
     return true;
 }

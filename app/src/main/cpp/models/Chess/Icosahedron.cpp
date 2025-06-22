@@ -10,6 +10,7 @@
 #include "../../logger.h"
 #define LOG_TAG "ICOSAHEDRON"
 
+Icosahedron::Icosahedron(const Scene& scene, Material *material) : Model{scene, material}{}
 Icosahedron::~Icosahedron(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -112,7 +113,7 @@ void Icosahedron::render() const {
     glUseProgram(mProgram);
     checkGlError("glUseProgram", LOG_TAG);
 
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(transform()));
+    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(m_transform()));
 
     glUniform3f(uSquareSizeHandle, 0.15f, 0.15f, 0.15f);
     glUniform3f(uLightDirectionHandle,glm::cos(glm::radians(30.f)), 1, 1.f);
@@ -150,7 +151,7 @@ void Icosahedron::updateState() {
     m_rotationAngle +=m_delta_angle;
     if(m_rotationAngle > TWO_PI)
         m_rotationAngle -= TWO_PI;
-    reset_modelview();
+    m_transform.reset();
     //scale(glm::vec3{0.35f});
     //rotate(glm::vec3{1.0f, 1.0f, 1.0f}, m_rotationAngle);
     //translate(glm::vec3(-0.0f, 0.f, -0.0f));

@@ -40,8 +40,8 @@ void Scene::setBoundaries(const Boundaries &new_boundaries){
 
 void Scene::setViewPort(int w, int h){
     log_info(LOG_TAG, "@Scene::setViewPort(%d, %d)", w, h);
-    //glViewport(activeCamera.0, 0, w, h);
-    glViewport(0, 0, w, h);
+
+    glViewport(0, 0, 1080, 2400);
     checkGlError("glViewport", LOG_TAG);
 }
 
@@ -80,8 +80,10 @@ void Scene::render(){
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     for(auto pModel : models){
+        pModel->material()->enable();
         pModel->updateState();
         pModel->render();
+        pModel->material()->disable();
     }
 
 }

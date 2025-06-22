@@ -14,7 +14,7 @@
 #include "../../logger.h"
 #define LOG_TAG "MONOCHROMATIC_CUBE"
 
-ChessCube::ChessCube(Material* material) : material{material}{};
+ChessCube::ChessCube(const Scene& scene, Material* material) :Model{scene,  material}{};
 ChessCube::~ChessCube(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -22,14 +22,11 @@ ChessCube::~ChessCube(){
 
 bool ChessCube::init(){
 
-    //{std::pair<const char* , VertexAttribute>{"aPosition", {3, 0}}};
-    auto attributesInitialized = material->addAttributes(std::vector<std::tuple< const char*, GLsizei, GLsizei>> {
-            std::make_tuple("aPosition", 3, 0)
-    });
-    auto uniformsInitialized = material->addUniforms(std::vector<const char*>{
-            "uLightDirection", "u_mat_mvp", "uFaceNormal",
-            "uSquareSize",    "uEvenColor", "uOddColor"
-    });
+
+    //std::vector<std::tuple<const std::string&, GLsizei, GLsizei>> attribs{std::make_tuple(std::string{"aPosition"}, 3, 0)};
+    auto attributesInitialized = p_material->addAttributes({std::make_tuple(std::string{"aPosition"}, 3, 0)});
+    //std::vector<const std::string> uniforms{"u_mat_mvp", "uLightDirection", "uSquareSize", "uEvenColor", "uOddColor"};
+    auto uniformsInitialized = p_material->addUniforms({"u_mat_mvp", "uLightDirection", "uSquareSize", "uEvenColor", "uOddColor"});
 
     return uniformsInitialized && attributesInitialized && initVBO();
 
@@ -78,18 +75,18 @@ void ChessCube::render() const {
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    material->populateAttribBuffers();
-    material->enable();
+    p_material->populateAttribBuffers();
+    p_material->enable();
 
-    glUniformMatrix4fv(material->getUniformLocation("u_mat_mvp"), 1, GL_FALSE, glm::value_ptr(transform()));
+    glUniformMatrix4fv(p_material->getUniformLocation("u_mat_mvp"), 1, GL_FALSE, glm::value_ptr(m_transform()));
 
 
     auto stride = 4u*sizeof(GLuint);
     auto offset = 0u;
-    glUniform3f(material->getUniformLocation("uEvenColor"), 1.0, 0.0, 0.0);
-    glUniform3f(material->getUniformLocation("uOddColor"), 0.0, 1.0, 0.0);
-    glUniform3f(material->getUniformLocation("uSquareSize"), 0.25, 0.25, 0.25);
-    glUniform3f(material->getUniformLocation("uLightDirection"),glm::cos(glm::radians(30.f)), 1, 1.f);
+    glUniform3f(p_material->getUniformLocation("uEvenColor"), 1.0, 0.0, 0.0);
+    glUniform3f(p_material->getUniformLocation("uOddColor"), 0.0, 1.0, 0.0);
+    glUniform3f(p_material->getUniformLocation("uSquareSize"), 1.125, 1.125, 1.125);
+    glUniform3f(p_material->getUniformLocation("uLightDirection"),glm::cos(glm::radians(30.f)), 1, 1.f);
 
     const GLfloat faceNormals[]{
       0.f,0.f,1.f,
@@ -102,7 +99,7 @@ void ChessCube::render() const {
 
     for(auto i=0; i<6; ++i){
         auto k =3*i;
-        glUniform3f(material->getUniformLocation("uFaceNormal"), faceNormals[k],faceNormals[k+1],faceNormals[k+2]);
+        glUniform3f(p_material->getUniformLocation("uFaceNormal"), faceNormals[k],faceNormals[k+1],faceNormals[k+2]);
         glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT,
                        reinterpret_cast<const void *>(offset));
         checkGlError("glDrawElements", LOG_TAG);
@@ -112,7 +109,7 @@ void ChessCube::render() const {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    material->disable();
+    p_material->disable();
 
 
 }
@@ -126,11 +123,11 @@ void ChessCube::updateState() {
 
     if(m_rotationAngle > TWO_PI)
         m_rotationAngle -= TWO_PI;
-    transform.reset();
+    m_transform.reset();
     //translate(-pivot);
-    transform.scale(glm::vec3{0.35f});
-    transform.rotate(m_rotationAngle, glm::vec3{-1.0f, 1.0f, 1.0f});
-    transform.translate(glm::vec3(-0.60f, 0.6f, -.4f));
+    m_transform.scale(glm::vec3{0.35f});
+    m_transform.rotate(m_rotationAngle, glm::vec3{-1.0f, 1.0f, 1.0f});
+    m_transform.translate(glm::vec3(-0.60f, 0.6f, -.4f));
 
     m_rotationAngle +=m_delta_angle;
     std::this_thread::sleep_for(std::chrono::milliseconds(2));

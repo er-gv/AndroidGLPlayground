@@ -11,6 +11,7 @@
 
 #define LOG_TAG "CHESS_PYRAMID"
 
+ChessPyramid::ChessPyramid(const Scene& scene, Material *material):Model{scene, material}{}
 ChessPyramid::~ChessPyramid(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
@@ -27,13 +28,17 @@ bool ChessPyramid::init(){
 
 bool ChessPyramid::initMaterial(){
 
-    auto attributesInitialized = material->addAttributes(std::vector<std::tuple< const char*, GLsizei, GLsizei>> {
-            std::make_tuple("aPosition", 3, 0)
+    auto attributesInitialized = p_material->addAttributes(std::vector<std::tuple< const std::string&, GLsizei, GLsizei>> {
+            std::make_tuple(std::string{"aPosition"}, 3, 0)
     });
 
-    auto uniformsInitialized = material->addUniforms(std::vector<const char*>{
-            "uLightDirection", "u_mat_mvp", "uFaceNormal",
-            "uSquareSize",    "uEvenColor", "uOddColor"
+    auto uniformsInitialized = p_material->addUniforms(std::vector<const std::string>{
+            std::string{"uLightDirection"},
+            std::string{"u_mat_mvp"},
+            std::string{"uFaceNormal"},
+            std::string{"uSquareSize"},
+            std::string{"uEvenColor"},
+            std::string{"uOddColor"}
     });
 
     return  attributesInitialized && uniformsInitialized;
@@ -75,19 +80,19 @@ void ChessPyramid::render() const{
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    material->enable();
-    material->populateAttribBuffers();
+    p_material->enable();
+    p_material->populateAttribBuffers();
 
 
-    glUniformMatrix4fv(material->getUniformLocation("u_mat_mvp"), 1, GL_FALSE, glm::value_ptr(transform()));
+    glUniformMatrix4fv(p_material->getUniformLocation("u_mat_mvp"), 1, GL_FALSE, glm::value_ptr(m_transform()));
 
 
     unsigned offset{0};
     ;
-    glUniform3f(material->getUniformLocation("uSquareSize"), 0.3f, 0.04f, 0.3f);
+    glUniform3f(p_material->getUniformLocation("uSquareSize"), 0.3f, 0.04f, 0.3f);
 
     auto direction {glm::cos(glm::radians(30.f))};
-    glUniform3f(material->getUniformLocation("uLightDirection"), -direction, -direction, -direction);
+    glUniform3f(p_material->getUniformLocation("uLightDirection"), -direction, -direction, -direction);
 
 
     const GLfloat colors[] = {
@@ -97,9 +102,9 @@ void ChessPyramid::render() const{
             +0.0f, +0.8f, +0.8f, //3
     };
 
-    auto faceNormalHandler {material->getUniformLocation("uFaceNormal")};
-    auto evenColorHandler {material->getUniformLocation("uEvenColor")};
-    auto oddColorHandler {material->getUniformLocation("uOddColor")};
+    auto faceNormalHandler {p_material->getUniformLocation("uFaceNormal")};
+    auto evenColorHandler {p_material->getUniformLocation("uEvenColor")};
+    auto oddColorHandler {p_material->getUniformLocation("uOddColor")};
     for(auto k=0; k< 4; ++k ) {
         glUniform3f(faceNormalHandler, normals[k].x, normals[k].y, normals[k].z);
         auto colorIndex = 6*(k%2);
@@ -119,7 +124,7 @@ void ChessPyramid::render() const{
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    material->disable();
+    p_material->disable();
 }
 
 
@@ -131,11 +136,11 @@ void ChessPyramid::updateState(){
 
     if(m_rotationAngle > TWO_PI)
         m_rotationAngle -= TWO_PI;
-    transform.reset();
-    transform.scale(glm::vec3{0.6f});
-    transform.translate(glm::vec3(-0.3f, +0.15f, -0.3f));
-    transform.rotate(-glm::half_pi<float>()*0.3, glm::vec3(1.0f, 0.0f, 1.0f) );
-    transform.rotate(m_rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_transform.reset();
+    m_transform.scale(glm::vec3{0.6f});
+    m_transform.translate(glm::vec3(-0.3f, +0.15f, -0.3f));
+    m_transform.rotate(-glm::half_pi<float>()*0.3, glm::vec3(1.0f, 0.0f, 1.0f) );
+    m_transform.rotate(m_rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
     m_rotationAngle += m_delta_angle;
 }
