@@ -22,12 +22,8 @@ ChessCube::~ChessCube(){
 
 bool ChessCube::init(){
 
-
-    //std::vector<std::tuple<const std::string&, GLsizei, GLsizei>> attribs{std::make_tuple(std::string{"aPosition"}, 3, 0)};
     auto attributesInitialized = p_material->addAttributes({std::make_tuple(std::string{"aPosition"}, 3, 0)});
-    //std::vector<const std::string> uniforms{"u_mat_mvp", "uLightDirection", "uSquareSize", "uEvenColor", "uOddColor"};
-    auto uniformsInitialized = p_material->addUniforms({"u_mat_mvp", "uLightDirection", "uSquareSize", "uEvenColor", "uOddColor"});
-
+    auto uniformsInitialized = p_material->addUniforms({"u_mat_mvp", "uLightDirection", "uFaceNormal", "uSquareSize", "uEvenColor", "uOddColor"});
     return uniformsInitialized && attributesInitialized && initVBO();
 
 }
@@ -78,15 +74,15 @@ void ChessCube::render() const {
     p_material->populateAttribBuffers();
     p_material->enable();
 
-    glUniformMatrix4fv(p_material->getUniformLocation("u_mat_mvp"), 1, GL_FALSE, glm::value_ptr(m_transform()));
+    p_material->setProperty("u_mat_mvp", m_transform());
 
 
     auto stride = 4u*sizeof(GLuint);
     auto offset = 0u;
-    glUniform3f(p_material->getUniformLocation("uEvenColor"), 1.0, 0.0, 0.0);
-    glUniform3f(p_material->getUniformLocation("uOddColor"), 0.0, 1.0, 0.0);
-    glUniform3f(p_material->getUniformLocation("uSquareSize"), 1.125, 1.125, 1.125);
-    glUniform3f(p_material->getUniformLocation("uLightDirection"),glm::cos(glm::radians(30.f)), 1, 1.f);
+    p_material->setProperty("uEvenColor", glm::vec3{0.f, 0.3f, 1.0});
+    p_material->setProperty("uOddColor", glm::vec3{1.0, 1.0, 0.0});
+    p_material->setProperty("uSquareSize", glm::vec3{0.25f});
+    p_material->setProperty("uLightDirection" ,glm::cos(glm::radians(30.f)));
 
     const GLfloat faceNormals[]{
       0.f,0.f,1.f,

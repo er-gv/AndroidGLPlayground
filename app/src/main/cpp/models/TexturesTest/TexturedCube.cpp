@@ -28,8 +28,7 @@ bool TexturedCube::init(){
 
 bool TexturedCube::initMaterial() {
 
-    p_material->generateTextures({"texture/stone_wall_public_domain.png",
-                                "texture/stone_wall_public_domain.png"});
+    p_material->generateTextures({"texture/Companion_Cube.jpg"});
 
     auto attributesInitialized = p_material->addAttributes(
             std::vector<std::tuple<const std::string&, GLsizei, GLsizei>>{
@@ -110,8 +109,8 @@ void TexturedCube::render() const{
     auto mvp{m_transform()};
     p_material->setProperty("u_MVPMatrix",glm::mat3(mvp));
 
-    auto mv{glm::inverse(glm::transpose(glm::mat3(mvp)))};
-    p_material->setProperty("u_NormalsMatrix",glm::mat3(mv));
+    glm::mat3 normalsMat{glm::mat3{glm::inverse(glm::transpose(mvp))}};
+    p_material->setProperty("u_NormalsMatrix",normalsMat);
 
 
     //face normals
@@ -127,11 +126,9 @@ void TexturedCube::render() const{
     auto uSampler2DHandle = p_material->getUniformLocation("u_Texture");
     glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
     glBindTexture(GL_TEXTURE_2D, p_material->getTexture(0));
-    glActiveTexture(GL_TEXTURE1); // Activate texture unit 1
-    glBindTexture(GL_TEXTURE_2D, p_material->getTexture(1));
 
     for(auto k=0; k< 6; ++k) {
-        glUniform1i(uSampler2DHandle, k%2);
+        glUniform1i(uSampler2DHandle, 0);
         p_material->setProperty("u_FaceNormal", faceNormals[k]);
         glDrawArrays(GL_TRIANGLE_STRIP, 4*k, 4);
         checkGlError("glDrawArrays", LOG_TAG);

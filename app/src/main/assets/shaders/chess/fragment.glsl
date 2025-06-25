@@ -19,6 +19,6 @@ void main() {
     bool oddity =  (0==((v.x+v.y+v.z)%2));
     vec3 color = (oddity ? uEvenColor : uOddColor);
     vec3 tface = vec3(inverse(transpose(normals_mat))*uFaceNormal);
-    float lightFactor = clamp(dot(-uLightDirection,tface), 0.01, 1.0);
+    float lightFactor = clamp(dot(-uLightDirection,tface), 0.61, 1.0);
     fragColor = vec4(lightFactor*color, 1.0);//lightFactor*color, 1.0);
 }

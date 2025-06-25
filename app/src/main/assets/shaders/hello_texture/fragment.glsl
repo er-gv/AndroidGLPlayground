@@ -18,14 +18,14 @@ void main()
 
 	// Calculate the dot product of the light vector and vertex normal. If the normal and light vector are
 	// pointing in the same direction then it will get max illumination.
-    vec3 t_norm = normalize(u_NormalsMatrix*u_FaceNormal);
+    vec3 t_norm = normalize(-u_NormalsMatrix*u_FaceNormal);
     float diffuse = max(dot(t_norm, lightVector), 0.0);
 
 	// Add attenuation.
     diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance)));
 
     // Add ambient lighting
-    diffuse = clamp(diffuse, 0.01, 1.0);
+    diffuse = clamp(diffuse, 0.601, 1.0);
 
 	// Multiply the color by the diffuse illumination level and texture value to get final output color.
     gl_FragColor = (diffuse*texture2D(u_Texture, v_TexCoordinate));

@@ -22,17 +22,41 @@ void addCubeModel() {
     auto* companionCube = new TexturedCube(scene, material);
     companionCube->init();
     companionCube->transform().
-        scale(glm::vec3(0.45f)).
-        translate(glm::vec3(0.0f, 0.0f, -.7f)).
-        scale(glm::vec3(0.8f, 0.8f, 0.8f))
+
+        translate(glm::vec3(0.0f, -97.5f, -.7f)).
+        scale(glm::vec3(0.35f))
     ;
-    companionCube->setPerFrameTransform(Transform().rotate(0.005f* glm::two_pi<float>(), glm::vec3{1.0f, 1.0f, 0.0f}));
+    companionCube->setPerFrameTransform(Transform().rotate(0.035f* glm::two_pi<float>(), glm::vec3{1.0f, 1.0f, 0.0f}));
 
     companionCube->material()->enable();
-    companionCube->material()->setProperty("u_LightPos", glm::vec3{0.0f, 0.5f, 0.9f});
+    companionCube->material()->setProperty("u_LightPos", glm::vec3{3.50f, 0.8f, 0.9f});
     companionCube->material()->disable();
 
     scene.addModel(companionCube);
+}
+
+
+void addPyramidModel() {
+
+    auto material {Material::materialBuilder("shaders/hello_texture/vertex.glsl",
+                                             "shaders/hello_texture/fragment.glsl")};
+    auto* model = new TexturedPyramid(scene, material);
+    model->init();
+    model->transform().
+            scale(glm::vec3{3.5, 1.0,3.5}).
+            scale(glm::vec3{0.4f}).
+            translate(glm::vec3(+0.83f, +19.5f, -8.7f)).
+
+            rotate(+0.25*glm::pi<float>(), glm::vec3{1.0f, 0.0f, 0.0f}).
+            rotate(-0.25*glm::pi<float>(), glm::vec3{0.0f, 0.0f, 1.0f})
+            ;
+    model->setPerFrameTransform(Transform().rotate(-0.035f* glm::two_pi<float>(), glm::vec3{0.0f, 1.0f, 0.0f}));
+
+    model->material()->enable();
+    model->material()->setProperty("u_LightPos", glm::vec3{0.0f, 0.8f, 0.9f});
+    model->material()->disable();
+
+    scene.addModel(model);
 }
 
 
@@ -48,6 +72,7 @@ bool setupGraphics(int w, int h) {
     scene.setViewPort(w, h);
 
     addCubeModel();
+    addPyramidModel();
     return true;
 }
 

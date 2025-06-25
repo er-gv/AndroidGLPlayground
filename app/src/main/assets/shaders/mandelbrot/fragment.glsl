@@ -67,7 +67,7 @@ float diffuseCoafficiant(){
     diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance)));
 
     // Add ambient lighting
-    diffuse = clamp(diffuse, 0.01, 1.0);
+    diffuse = clamp(diffuse, 0.91, 1.0);
     return diffuse;
 }
 
