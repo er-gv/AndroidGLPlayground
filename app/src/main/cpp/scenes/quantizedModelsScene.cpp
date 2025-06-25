@@ -10,14 +10,21 @@
 
 static Scene scene;
 
+void addCubeModel() {
+
+    auto quantizedMaterial {Material::materialBuilder("shaders/quantized_colors/vertex.glsl",
+                                                      "shaders/quantized_colors/fragment.glsl")};
+    auto* quantizedCube = new QuantizedCube(scene, quantizedMaterial);
+    quantizedCube->init();
+    quantizedCube->setPerFrameTransform(Transform().rotate(glm::two_pi<float>() / 50.f, glm::vec3{1.0f, 1.0f, -1.0f}));
+    scene.addModel(quantizedCube);
+}
+
 bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@quantizeModelsScene::setupGraphics(%d, %d)", w, h);
     scene.reset();
-    auto* fractalCube = new QuantizedCube(scene, nullptr);
-    fractalCube->init();
-    scene.addModel(fractalCube);
     scene.setClearColor(glm::vec3{0.1f, 0.6f, 0.85f});
-
+    addCubeModel();
     scene.setViewPort(w, h);
     return true;
 }

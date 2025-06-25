@@ -25,10 +25,12 @@ public:
     virtual void updateState() = 0;
     Transform& transform() {return m_transform;}
     const Material* material() const {return p_material;}
+    void setPerFrameTransform(const Transform& t){perFrameTransform = t;};
 
 protected:
     const Scene& parentScene;
     Transform m_transform;
+    Transform perFrameTransform{glm::mat4(1.0f)};
     glm::vec3 pivot{0};
     Material* p_material;
 

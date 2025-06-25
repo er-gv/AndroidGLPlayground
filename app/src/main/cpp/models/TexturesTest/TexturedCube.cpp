@@ -11,14 +11,14 @@
 
 #define LOG_TAG "FRACTAL_CUBE"
 
-FractalCube::FractalCube(const Scene& scene, Material *material): Model{scene, material} {}
-FractalCube::~FractalCube(){
+TexturedCube::TexturedCube(const Scene& scene, Material *material): Model{scene, material} {}
+TexturedCube::~TexturedCube(){
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     delete p_material;
 }
 
-bool FractalCube::init(){
+bool TexturedCube::init(){
 
     initMaterial();
     initGeometry();
@@ -26,15 +26,10 @@ bool FractalCube::init(){
     return true;
 }
 
-bool FractalCube::initMaterial() {
+bool TexturedCube::initMaterial() {
 
-    p_material->generateTextures({"texture/Companion_Cube.jpg",
-                                "texture/trans_comanion_cube.jpg"});
-
-    glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
-    glBindTexture(GL_TEXTURE_2D, p_material->getTexture(0));
-    glActiveTexture(GL_TEXTURE1); // Activate texture unit 1
-    glBindTexture(GL_TEXTURE_2D, p_material->getTexture(1));
+    p_material->generateTextures({"texture/stone_wall_public_domain.png",
+                                "texture/stone_wall_public_domain.png"});
 
     auto attributesInitialized = p_material->addAttributes(
             std::vector<std::tuple<const std::string&, GLsizei, GLsizei>>{
@@ -56,7 +51,7 @@ bool FractalCube::initMaterial() {
 }
 
 
-void FractalCube::initGeometry(){
+void TexturedCube::initGeometry(){
 
     const GLfloat triangleVertices[] = {
             // geometry XYZ - Tex UV
@@ -105,23 +100,18 @@ void FractalCube::initGeometry(){
 
 }
 
-void FractalCube::render() const{
+void TexturedCube::render() const{
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     p_material->populateAttribBuffers();
 
-
     p_material->enable();
 
-    auto uMatMVPHandle = p_material->getUniformLocation("u_MVPMatrix");
-    glm::mat4 mvp{m_transform()};
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(mvp));
+    auto mvp{m_transform()};
+    p_material->setProperty("u_MVPMatrix",glm::mat3(mvp));
 
-    auto uNormalsMatrixHandle = p_material->getUniformLocation("u_NormalsMatrix");
-    glm::mat3 normalsMat{glm::inverse(glm::transpose(glm::mat3(mvp)))};
-    glUniformMatrix3fv(uNormalsMatrixHandle, 1, GL_FALSE, glm::value_ptr( normalsMat));
-
-    auto uSampler2DHandle = p_material->getUniformLocation("u_Texture");
+    auto mv{glm::inverse(glm::transpose(glm::mat3(mvp)))};
+    p_material->setProperty("u_NormalsMatrix",glm::mat3(mv));
 
 
     //face normals
@@ -133,12 +123,16 @@ void FractalCube::render() const{
             glm::vec3{0,1,0}, // top
             glm::vec3{0,-1,0} // bottom
     };
-    glUniform3f(p_material->getUniformLocation("u_LightPos"), 0.0f, 0.5f, 0.9f);
+
+    auto uSampler2DHandle = p_material->getUniformLocation("u_Texture");
+    glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
+    glBindTexture(GL_TEXTURE_2D, p_material->getTexture(0));
+    glActiveTexture(GL_TEXTURE1); // Activate texture unit 1
+    glBindTexture(GL_TEXTURE_2D, p_material->getTexture(1));
 
     for(auto k=0; k< 6; ++k) {
         glUniform1i(uSampler2DHandle, k%2);
-        glUniform3fv(p_material->getUniformLocation("u_FaceNormal"), 1,
-                     glm::value_ptr(faceNormals[k]));
+        p_material->setProperty("u_FaceNormal", faceNormals[k]);
         glDrawArrays(GL_TRIANGLE_STRIP, 4*k, 4);
         checkGlError("glDrawArrays", LOG_TAG);
     }
@@ -149,20 +143,6 @@ void FractalCube::render() const{
 
 }
 
-void FractalCube::updateState(){
-
-
-    static const auto TWO_PI{glm::two_pi<float>()};
-
-    m_rotationAngle += 0.4*m_delta_angle;
-    if(m_rotationAngle > TWO_PI)
-        m_rotationAngle -= TWO_PI;
-    m_transform.reset();
-    m_transform.scale(glm::vec3(0.45f));
-    m_transform.translate(glm::vec3(0.0f, 0.0f, -.7f));
-    m_transform.scale(glm::vec3(0.8f, 0.8f, 0.8f));
-    m_transform.rotate(m_rotationAngle, glm::vec3(1.0f, 1.0f, 0.0f));
-    //transform.rotate(glm::pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-
+void TexturedCube::updateState(){
+    m_transform.multiply(perFrameTransform);
 }

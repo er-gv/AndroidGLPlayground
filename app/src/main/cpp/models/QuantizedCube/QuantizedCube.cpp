@@ -10,19 +10,14 @@
 #define LOG_TAG "QUANTIZED_CUBE"
 QuantizedCube::QuantizedCube(const Scene& scene, Material *material) : Model{scene, material}{}
 QuantizedCube::~QuantizedCube(){
-    glDeleteProgram(mProgram);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 }
 
 bool QuantizedCube::init(){
-    if(!initMaterial()){
-        return false;
-    }
+    initMaterial();
     initModel();
-
     return true;
-
 }
 
 void QuantizedCube::initModel(){
@@ -40,9 +35,6 @@ void QuantizedCube::initModel(){
             -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
             +0.5f, +0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
             -0.5f, +0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
-
-
-
     };
 
     const GLuint indices[]{
@@ -54,93 +46,58 @@ void QuantizedCube::initModel(){
         4,1,5,0};
 
 
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
-                 indices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(mTriangleData),
                  mTriangleData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
+                 indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 bool QuantizedCube::initMaterial(){
 
-    const auto vertexShaderSrc ="shaders/quantized_colors/vertex.glsl";
-    const auto fragmentShaderSrc ="shaders/quantized_colors/fragment.glsl";
-    mProgram = ShadersBuilder::buildGLProgram(vertexShaderSrc,
-                                              fragmentShaderSrc);
-    if (!mProgram) {
-        log_error(LOG_TAG, "Could not create program.");
-        return false;
-    }
+    p_material->addAttribute(std::make_tuple(std::string{"a_Position"}, 3, 0));
+    p_material->addAttribute(std::make_tuple(std::string{"a_Color"}, 3, 3));
 
-    uMatMVPHandle = glGetUniformLocation(mProgram, "u_MVPMatrix");
-    uniformLocations.insert(std::make_pair("u_MVPMatrix", uMatMVPHandle));
-    if(checkGlError("glGetUniformLocation", LOG_TAG))
-        return false;
+    p_material->addUniform(std::string{"u_MVPMatrix"});
+    p_material->addUniform(std::string{"u_Quanta"});
+    //p_material->addUniform(std::string{"u_FaceNormal"});
 
-    uQuantaHandle = glGetUniformLocation(mProgram, "u_Quanta");
-    uniformLocations.insert(std::make_pair("u_Quanta", uQuantaHandle));
-    if(checkGlError("glGetUniformLocation", LOG_TAG))
-        return false;
-
-
-    aColorHandle = glGetAttribLocation(mProgram, "a_Color");
-    attribLocations.insert(std::make_pair("a_Color", aColorHandle));
-    if(checkGlError("glGetUniformLocation", LOG_TAG))
-        return false;
-
-    aPositionHandle = glGetAttribLocation(mProgram, "a_Position");
-    attribLocations.insert(std::make_pair("a_Position", aPositionHandle));
-    if(checkGlError("glGetAttribLocation", LOG_TAG))
-        return false;
+    p_material->enable();
+    p_material->setProperty("u_Quanta", 8.0f);
+    p_material->disable();
 
     return true;
 }
 
 void QuantizedCube::render() const {
 
-    glUseProgram(mProgram);
+    p_material->enable();
+
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(aPositionHandle, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)nullptr);
-    checkGlError("glVertexAttribPointer", LOG_TAG);
-    glEnableVertexAttribArray(aPositionHandle);
-
-    glVertexAttribPointer(aColorHandle, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
-    checkGlError("glVertexAttribPointer", LOG_TAG);
-    glEnableVertexAttribArray(aColorHandle);
-
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(m_transform()));
-    glUniform1f(uQuantaHandle, quanta);
-
-    checkGlError("glUseProgram", LOG_TAG);
-
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, (void *) 0);
-    checkGlError("glDrawElement", LOG_TAG);
+    p_material->populateAttribBuffers();
+    p_material->setProperty("u_MVPMatrix", m_transform());
+
     for( unsigned i=0; i<6; ++i) {
         glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, (void *) (i * 4 * sizeof(unsigned)));
         checkGlError("glDrawElement", LOG_TAG);
     }
-    glUseProgram(0);
 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    p_material->disable();
 }
+
 
 void QuantizedCube::updateState() {
 
-    m_rotationAngle +=0.2;
-    if(m_rotationAngle > 360.0f)
-        m_rotationAngle-=360.0f;
-    m_transform.reset();
+    transform().multiply(perFrameTransform);
 
-    m_transform.rotate(glm::radians((float)m_rotationAngle), rotation_axis);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
 }

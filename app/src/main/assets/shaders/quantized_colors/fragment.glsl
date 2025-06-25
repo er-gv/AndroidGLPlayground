@@ -3,7 +3,6 @@ precision mediump float;       	// Set the default precision to medium. We don't
 varying vec3 v_Color;          	// This is the color from the vertex shader interpolated across the 
 // triangle per fragment.
 uniform float u_Quanta;
-uniform vec3 u_FaceNormal;
 // The entry point for our fragment shader.
 void main()
 {

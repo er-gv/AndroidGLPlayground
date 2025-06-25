@@ -12,21 +12,19 @@
 #include "../../engine/libs/glm/glm.hpp"
 #include "../../engine/libs/glm/gtc/constants.hpp"
 
-class FractalCube: public Model {
+class TexturedCube: public Model {
 
     GLuint VBO{0};
     GLuint EBO{0};
 
-
-    float m_rotationAngle{0};
     float m_delta_angle{0.005f* glm::two_pi<float>()};
 
     void initGeometry();
     bool initMaterial();
 
 public:
-    ~FractalCube() override;
-    FractalCube(const Scene&, Material* material);
+    ~TexturedCube() override;
+    TexturedCube(const Scene&, Material* material);
     bool init() override;
     void render() const override;
     void updateState() override;

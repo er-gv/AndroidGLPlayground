@@ -14,19 +14,46 @@
 
 static Scene scene;
 
+
+void addCubeModel() {
+    auto *cube = new ChessCube(scene,Material::materialBuilder(
+            "shaders/chess/vertex.glsl",
+            "shaders/chess/fragment.glsl")
+    );
+    cube->init();
+    cube->transform().scale(glm::vec3{0.35f}).translate(glm::vec3(-0.60f, 0.6f, -.4f));
+    cube->setPerFrameTransform(Transform()
+            .rotate(glm::two_pi<float>() / 250.f, glm::vec3(-1.0f, 1.0f, 1.0f)
+            ));
+}
+
+void addPyramidModel(){
+    auto *pyramid = new ChessCube(scene,Material::materialBuilder(
+            "shaders/chess/vertex.glsl",
+            "shaders/chess/fragment.glsl")
+    );
+    pyramid->init();
+
+    pyramid->transform().
+        scale(glm::vec3{0.6f}).
+        translate(glm::vec3(-0.3f, +0.15f, -0.3f)).
+        rotate(-0.3*glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 1.0f) );
+
+    pyramid->setPerFrameTransform(
+            Transform().rotate(glm::two_pi<float>() / 200.f, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    scene.addModel(pyramid);
+}
+
 bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@ChessBricksScene::setupGraphics(%d, %d)", w, h);
     scene.reset();
+    //scene.addPointLight();
     scene.addDirectionalLight(DirectionalLight());
-    Material* chessMaterial = Material::materialBuilder("shaders/chess/vertex.glsl", "shaders/chess/fragment.glsl");
-    auto* cube = new ChessCube(scene, Material::materialBuilder("shaders/chess/vertex.glsl", "shaders/chess/fragment.glsl"));
-    auto* pyramid = new ChessPyramid(scene, Material::materialBuilder("shaders/chess/vertex.glsl", "shaders/chess/fragment.glsl"));
-
-    cube->init();
-    pyramid->init();
-    scene.addModel(cube);
-    scene.addModel(pyramid);
     scene.setClearColor(glm::vec3(0.3f, 0.3f, 0.3f));
+    scene.setWaitBetweenFramesMillis(150u);
+    addCubeModel();
+    addPyramidModel();
     scene.setViewPort(w, h);
     return true;
 }

@@ -129,18 +129,5 @@ void ChessPyramid::render() const{
 
 
 void ChessPyramid::updateState(){
-    static float m_rotationAngle{0};
-    static const auto TWO_PI{glm::two_pi<float>()};
-    static const float m_delta_angle{glm::half_pi<float>()/200.f};
-
-
-    if(m_rotationAngle > TWO_PI)
-        m_rotationAngle -= TWO_PI;
-    m_transform.reset();
-    m_transform.scale(glm::vec3{0.6f});
-    m_transform.translate(glm::vec3(-0.3f, +0.15f, -0.3f));
-    m_transform.rotate(-glm::half_pi<float>()*0.3, glm::vec3(1.0f, 0.0f, 1.0f) );
-    m_transform.rotate(m_rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-    m_rotationAngle += m_delta_angle;
+    transform().multiply(perFrameTransform);
 }
