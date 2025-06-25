@@ -143,6 +143,19 @@ target_link_libraries(orangePyramid
 )
 
 
+add_library(icosahedron SHARED models/monochromeShapes/plutonic/Icosahedron.cpp)
+target_include_directories(icosahedron PRIVATE
+        ${GLM_HOME})
+target_link_libraries(icosahedron
+        materials
+        shadersFactory
+        logger
+        android
+        EGL # Direct dependency
+        GLESv2 # Direct dependency
+)
+
+
 add_library(quantizedCube SHARED models/QuantizedCube/QuantizedCube.cpp)
 target_include_directories(quantizedCube
         PRIVATE ${GLM_HOME})

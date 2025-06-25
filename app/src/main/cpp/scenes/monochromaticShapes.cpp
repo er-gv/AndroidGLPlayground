@@ -8,10 +8,27 @@
 #include "../scenes/Scene.h"
 #include "../models/monochromeShapes/MonochromeCube.h"
 #include "../models/monochromeShapes/OrangePyramid.h"
+#include "../models/monochromeShapes/plutonic/Icosahedron.h"
 
 #define LOG_TAG "MONOCHROME_CUBE"
 
 static Scene scene;
+
+void addIcosahedronModel() {
+    auto monochromaticMaterial {Material::materialBuilder(
+            "shaders/monochrome_with_normals/vertex.glsl",
+            "shaders/monochrome_with_normals/fragment.glsl")};
+    auto* ico = new Icosahedron(scene, monochromaticMaterial);
+    ico->init();
+
+    ico->transform().translate(glm::vec3(0.350f, 0.5f, 0.0f)).scale(glm::vec3{0.35f});
+    ico->setPerFrameTransform(Transform().rotate(glm::two_pi<float>() / 200.f, glm::vec3{0.0f, 1.0f, 0.0f}));
+
+    ico->material()->enable();
+    //cube->material()->setProperty("uLightDirection", glm::vec3{0,0, -1});
+    ico->material()->disable();
+    scene.addModel(ico);
+}
 
 void addCubeModel() {
     auto monochromaticMaterial {Material::materialBuilder(
@@ -53,6 +70,7 @@ bool setupGraphics(int w, int h) {
     scene.setWaitBetweenFramesMillis(20);
     addPyramidModel();
     addCubeModel();
+    addIcosahedronModel();
 
     return true;
 }
