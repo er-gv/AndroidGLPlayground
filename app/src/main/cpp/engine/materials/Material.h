@@ -62,7 +62,7 @@ public:
     bool setProperty(const std::string& property, float value) const;
     bool setProperty(const std::string& property, const glm::vec2& value) const;
     bool setProperty(const std::string& property, const glm::vec3& value) const;
-
+    bool setProperty(const std::string& property, const glm::mat4& value) const;
 
     GLsizei getVertexStride() const;
 

@@ -115,7 +115,22 @@ target_link_libraries(materials
 ## Models libraries
 ##
 ####################################################################
-add_library(orangePyramid SHARED models/OrangePyramid/OrangePyramid.cpp)
+
+
+add_library(monochromeCube SHARED models/monochromeShapes/MonochromeCube.cpp)
+target_include_directories(monochromeCube
+        PRIVATE ${GLM_HOME})
+target_link_libraries(monochromeCube
+        #        model
+        shadersFactory
+        materials
+        logger
+        android
+        EGL # Direct dependency
+        GLESv2 # Direct dependency
+)
+
+add_library(orangePyramid SHARED models/monochromeShapes/OrangePyramid.cpp)
 target_include_directories(orangePyramid PRIVATE
         ${GLM_HOME})
 target_link_libraries(orangePyramid
@@ -193,19 +208,6 @@ target_link_libraries(fractalPolyhedrons
         GLESv2 # Direct dependency
 )
 
-
-add_library(monochromeCube SHARED models/MonochromeCube/MonochromeCube.cpp)
-target_include_directories(monochromeCube
-        PRIVATE ${GLM_HOME})
-target_link_libraries(monochromeCube
-        #        model
-        shadersFactory
-        materials
-        logger
-        android
-        EGL # Direct dependency
-        GLESv2 # Direct dependency
-)
 
 add_library(texturedPyramid SHARED models/TexturesTest/TexturedPyramid.cpp)
 target_include_directories(texturedPyramid

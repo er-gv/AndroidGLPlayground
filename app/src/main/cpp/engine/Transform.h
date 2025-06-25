@@ -80,6 +80,11 @@ public:
         return *this;
     }
 
+    inline Transform& multiply(const Transform &t){
+        mat = mat * t.mat;
+        return *this;
+    }
+
     // Sets this matrix to be the result of multiplying the given matrices.
     inline Transform& multiply(const Transform &l, const Transform &r){
         mat = l.mat * r.mat;

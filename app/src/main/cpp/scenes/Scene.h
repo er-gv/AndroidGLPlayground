@@ -27,6 +27,7 @@ class Scene{
     EnvironmentLight enviromentLight;
     Boundaries boundaries;
     glm::vec3 clearColor;
+    unsigned waitBetweenFramesMillis{100};
 
 
 public:
@@ -44,6 +45,7 @@ public:
     static void printGLStats();
     void setViewPort(int w, int h);
     void setClearColor(const glm::vec3 &color);
+    void setWaitBetweenFramesMillis(unsigned millis);
     void setBoundaries(const Boundaries &new_boundaries);
     void render();
     void reset();

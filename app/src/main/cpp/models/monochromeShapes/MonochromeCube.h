@@ -16,14 +16,8 @@
 class MonochromeCube : public Model{
 private:
 
-    GLuint mProgram{888};
-    GLuint aPositionHandle{8};
-
-    GLint uColorHandle{0};
-    GLint u_matMVP{0};
-
-    GLuint vbo{0};
-    GLuint ebo{0};
+    GLuint VBO{0};
+    GLuint EBO{0};
     bool initVBO();
 
 
@@ -33,8 +27,6 @@ public:
     bool init() override;
     void updateState() override;
     void render() const override;
-
-
 
 };
 

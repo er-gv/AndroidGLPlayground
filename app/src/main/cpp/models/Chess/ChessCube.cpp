@@ -116,19 +116,5 @@ void ChessCube::render() const {
 
 void ChessCube::updateState() {
 
-    auto static TWO_PI{glm::two_pi<float>()};
-    const float m_delta_angle{glm::pi<float>()/250.f};
-
-    static float m_rotationAngle{0.f};
-
-    if(m_rotationAngle > TWO_PI)
-        m_rotationAngle -= TWO_PI;
-    m_transform.reset();
-    //translate(-pivot);
-    m_transform.scale(glm::vec3{0.35f});
-    m_transform.rotate(m_rotationAngle, glm::vec3{-1.0f, 1.0f, 1.0f});
-    m_transform.translate(glm::vec3(-0.60f, 0.6f, -.4f));
-
-    m_rotationAngle +=m_delta_angle;
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    transform().multiply(perFrameTransform);
 }

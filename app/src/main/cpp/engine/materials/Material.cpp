@@ -5,6 +5,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include "Material.h"
+#include "../../engine/libs/glm/gtc/type_ptr.hpp"
 #include "../shadersBuilder.h"
 #include "../../logger.h"
 #include <stdexcept>
@@ -97,18 +98,19 @@ GLint Material::getUniformLocation(const std::string& uniformName) const{
 bool Material::setProperty(const std::string& property, float value) const{
     auto result = true;
     auto handler{getUniformLocation(property)};
-    if(handler >= 0)
+    if(handler >= 0) {
         glUniform1f(handler, value);
+    }
     else result=false;
-
     return result;
 }
 
-bool Material::setProperty(const std::string& property, const glm::vec2& value) const{
+bool Material::setProperty(const std::string& property, const glm::vec2& value) const {
     auto result = true;
     auto handler{getUniformLocation(property)};
-    if(handler >= 0)
+    if (handler >= 0){
         glUniform2f(handler, value.x, value.y);
+    }
     else result=false;
     return result;
 }
@@ -116,11 +118,23 @@ bool Material::setProperty(const std::string& property, const glm::vec2& value) 
 bool Material::setProperty(const std::string& property, const glm::vec3& value) const{
     auto result = true;
     auto handler{getUniformLocation(property)};
-    if(handler >= 0)
+    if(handler >= 0) {
         glUniform3f(handler, value.x, value.y, value.z);
+    }
     else result=false;
     return result;
 }
+
+bool Material::setProperty(const std::string& property, const glm::mat4& value) const{
+    auto result = true;
+    auto handler{getUniformLocation(property)};
+    if(handler >= 0) {
+        glUniformMatrix4fv(handler, 1, GL_FALSE, glm::value_ptr(value));
+    }
+    else result=false;
+    return result;
+}
+
 
 void Material::populateAttribBuffers() const{
     auto stride{getVertexStride()};
@@ -134,7 +148,6 @@ void Material::populateAttribBuffers() const{
         checkGlError("glVertexAttribPointer", LOG_TAG);
         glEnableVertexAttribArray(attribLocation);
         checkGlError("glEnableVertexAttribArray", LOG_TAG);
-
     }
 }
 
@@ -164,7 +177,7 @@ GLsizei Material::getVertexStride() const{
     int offset = 0;
     for(const auto& attrib : attribLocations)
         offset += attrib.second.size;
-    return offset*sizeof(float);
+    return static_cast<GLsizei>(offset*sizeof(float));
 }
 
 
@@ -184,12 +197,10 @@ void Material::enable() const {
 
 void Material::disable() const{
 
-
     for(auto& attrib :attribLocations){
         //attrib.first is attrib name, second is pair <location, number of elements>
         glDisableVertexAttribArray(attrib.second.position);
     }
-
     for(auto& texture : textures){
         glActiveTexture(texture);
         glBindTexture(GL_TEXTURE_2D, 0);

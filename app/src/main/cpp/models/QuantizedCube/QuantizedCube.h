@@ -16,33 +16,19 @@
 
 class QuantizedCube : public Model{
 private:
-    float m_rotationAngle;
-    glm::vec3 rotation_axis{1.0f, 1.0f, -1.0f};
     GLfloat quanta{10.0f};
 
-    GLuint mProgram{888};
-    GLuint aPositionHandle{8};
-    GLuint aColorHandle{0};
-    GLuint VBO;
-    unsigned int EBO;
-
-    std::map<std::string, GLint> uniformLocations;
-    std::map<std::string, GLuint> attribLocations;
-
-
-    GLint uNormalHandle{0};
-    GLint uMatMVHandle{0};
-    GLint uMatMVPHandle{0};
-    GLint uTexHandle{0};
-    GLint uQuantaHandle;
-
+    //GLuint aPositionHandle{8};
+    //GLuint aColorHandle{0};
+    GLuint VBO{0};
+    unsigned int EBO{0};
 
     void initModel();
     bool initMaterial();
 
 public:
     QuantizedCube(const Scene&, Material* material);
-    ~QuantizedCube();
+    ~QuantizedCube() override;
     bool init() override;
     void updateState() override;
     void render() const override;

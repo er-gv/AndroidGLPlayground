@@ -60,6 +60,9 @@ void Scene::addDirectionalLight(const DirectionalLight& light){
 //void Scene::addPointLight(const PointLight& light){
 //    pointLight = light;
 //}
+void Scene::setWaitBetweenFramesMillis(unsigned millis){
+    waitBetweenFramesMillis=millis;
+}
 
 void Scene::addModel(Model* pModel){
     models.push_back(pModel);
@@ -80,10 +83,9 @@ void Scene::render(){
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     for(auto pModel : models){
-        pModel->material()->enable();
         pModel->updateState();
         pModel->render();
-        pModel->material()->disable();
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(waitBetweenFramesMillis));
 
 }
