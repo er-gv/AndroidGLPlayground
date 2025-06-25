@@ -21,9 +21,9 @@ void addCubeModel() {
             "shaders/chess/fragment.glsl")
     );
     cube->init();
-    cube->transform().scale(glm::vec3{0.35f}).translate(glm::vec3(-0.60f, 0.6f, -.4f));
+    cube->transform().scale(glm::vec3{0.135f}).translate(glm::vec3(-0.60f, 6.6f, -.4f));
     cube->setPerFrameTransform(Transform()
-            .rotate(glm::two_pi<float>() / 250.f, glm::vec3(-1.0f, 1.0f, 1.0f)
+            .rotate(glm::two_pi<float>() / 100.f, glm::vec3(-1.0f, 1.0f, 1.0f)
             ));
 }
 
@@ -35,12 +35,12 @@ void addPyramidModel(){
     pyramid->init();
 
     pyramid->transform().
-        scale(glm::vec3{0.6f}).
+        scale(glm::vec3{0.36f}).
         translate(glm::vec3(-0.3f, +0.15f, -0.3f)).
         rotate(-0.3*glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 1.0f) );
 
     pyramid->setPerFrameTransform(
-            Transform().rotate(glm::two_pi<float>() / 200.f, glm::vec3(0.0f, 1.0f, 0.0f)));
+            Transform().rotate(glm::two_pi<float>() / 100.f, glm::vec3(0.0f, 1.0f, 0.0f)));
 
     scene.addModel(pyramid);
 }
@@ -51,7 +51,7 @@ bool setupGraphics(int w, int h) {
     //scene.addPointLight();
     scene.addDirectionalLight(DirectionalLight());
     scene.setClearColor(glm::vec3(0.3f, 0.3f, 0.3f));
-    scene.setWaitBetweenFramesMillis(150u);
+    scene.setWaitBetweenFramesMillis(30u);
     addCubeModel();
     addPyramidModel();
     scene.setViewPort(w, h);

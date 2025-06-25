@@ -41,10 +41,10 @@ void addSideCube(){
 
     cube->init();
     cube->material()->enable();
-    m->setProperty("u_exponent", 0.3);
-    m->setProperty("u_juliaSeedPoint",   glm::vec2(-0.760,-0.331));
+    m->setProperty("u_exponent", 1.85);
+    m->setProperty("u_juliaSeedPoint",   glm::vec2(-0.760,-0.234));
     m->setProperty("u_SpectrumCoords", glm::vec2(0.5,0.9));
-    m->setProperty("u_LightPos", glm::vec3(0.0f, 0.5f, 1.9f));
+    m->setProperty("u_LightPos", glm::vec3(0.0f, 0.5f, 0.9f));
 
     cube->material()->disable();
 
@@ -61,11 +61,12 @@ void addTopCube(){
     auto cube {new FractalCube(scene,m)};
 
     cube->init();
-    m->setProperty("u_exponent", 0.3);
-    m->setProperty("u_juliaSeedPoint",   glm::vec2(-0.835,+0.2131));
+    m->enable();
+    m->setProperty("u_exponent", 1.227f);
+    m->setProperty("u_juliaSeedPoint",   glm::vec2(0.31,0.32));
     m->setProperty("u_SpectrumCoords", glm::vec2(0.35,0.9));
     m->setProperty("u_LightPos", glm::vec3(0.0f, 0.5f, 1.9f));
-    m->setProperty("u_Spectrum", m->getTexture(0));
+    m->disable();
 
     cube->transform().translate(glm::vec3(0.3f, 0.7f, -0.6f))
             .scale(glm::vec3( 0.18f, 0.18f, 0.18f));
@@ -80,11 +81,10 @@ void addBottomCube(){
 
     cube->init();
     m->enable();
-    m->setProperty("u_exponent", 0.3);
+    m->setProperty("u_exponent", 2.8);
     m->setProperty("u_juliaSeedPoint",   glm::vec2(-0.835,-0.2131));
     m->setProperty("u_SpectrumCoords", glm::vec2(0.0,0.3));
     m->setProperty("u_LightPos", glm::vec3(0.0f, 0.5f, 1.9f));
-    m->setProperty("u_Spectrum", m->getTexture(0));
     m->disable();
 
     cube->transform().translate(glm::vec3(0.0f, -0.7f, -0.6f))
@@ -100,11 +100,10 @@ void addCentralCube(){
 
     cube->init();
     m->enable();
-    m->setProperty("u_exponent", 0.3);
+    m->setProperty("u_exponent", 1.25);
     m->setProperty("u_juliaSeedPoint",   glm::vec2(0.2,0.5));
     m->setProperty("u_SpectrumCoords", glm::vec2(0.0,1.0));
     m->setProperty("u_LightPos", glm::vec3(0.0f, 0.5f, 1.9f));
-    m->setProperty("u_Spectrum", m->getTexture(0));
     m->disable();
 
     cube->transform().scale(glm::vec3( 0.25f, 0.25f, 0.25f))

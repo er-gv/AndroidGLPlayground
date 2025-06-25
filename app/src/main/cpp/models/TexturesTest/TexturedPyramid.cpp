@@ -36,7 +36,7 @@ bool TexturedPyramid::initMaterial(){
         });
 
         auto uniformsInitialized = p_material->addUniforms(std::vector<const std::string>{
-                "u_Texture", "u_MVPMatrix"
+                "u_Texture", "u_MVPMatrix", "u_NormalsMatrix", "u_FaceNormal", "u_LightPos"
         });
         //p_material->logUniforms();
 
@@ -83,20 +83,27 @@ void TexturedPyramid::render() const{
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     p_material->populateAttribBuffers();
 
-
     p_material->enable();
 
-    auto uMatMVPHandle = p_material->getUniformLocation("u_MVPMatrix");
-    glUniformMatrix4fv(uMatMVPHandle, 1, GL_FALSE, glm::value_ptr(m_transform()));
+    auto mvp{m_transform()};
+    p_material->setProperty("u_MVPMatrix",glm::mat3(mvp));
+
+    glm::mat3 normalsMat{glm::mat3{glm::inverse(glm::transpose(mvp))}};
+    p_material->setProperty("u_NormalsMatrix",normalsMat);
 
     glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
     glBindTexture(GL_TEXTURE_2D, p_material->getTexture(0));
     glActiveTexture(GL_TEXTURE1); // Activate texture unit 1
     glBindTexture(GL_TEXTURE_2D, p_material->getTexture(1));
+    auto uSampler2DHandle = p_material->getUniformLocation("u_Texture");
+
+
+    auto rotate45Deg = glm::rotate(glm::mat4{1.0}, 0.25f*glm::pi<float>(), glm::vec3{1.0,0.0,0.0});
 
     for(auto k=0, offset=0; k< 4; ++k, offset+=3 ) {
-        auto uSampler2DHandle = p_material->getUniformLocation("u_Texture");
         glUniform1i(uSampler2DHandle, k%2);
+        auto rotate90DegY = glm::rotate(glm::mat4{1.0}, k*glm::half_pi<float>(), glm::vec3{0.0,1.0,0.0});
+        p_material->setProperty("u_FaceNormal", rotate45Deg*rotate90DegY);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, reinterpret_cast<const void *>(offset*sizeof(GLuint)));
         checkGlError("glDrawElements", LOG_TAG);
     }
@@ -108,17 +115,5 @@ void TexturedPyramid::render() const{
 }
 
 void TexturedPyramid::updateState(){
-
-
-    static const auto TWO_PI{glm::two_pi<float>()};
-
-    m_rotationAngle += m_delta_angle;
-    if(m_rotationAngle > TWO_PI)
-        m_rotationAngle -= TWO_PI;
-    //transform.reset();
-    m_transform.translate(glm::vec3(0.0f, 0.3f, -.3f));
-    m_transform.scale(glm::vec3(0.6f, 1.0f, 0.6f));
-    m_transform.rotate(m_rotationAngle, glm::vec3(0.0f, 1.0f, 1.0f));
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-
+    m_transform.multiply(perFrameTransform);
 }
