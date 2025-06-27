@@ -117,10 +117,10 @@ target_link_libraries(materials
 ####################################################################
 
 
-add_library(monochromeCube SHARED models/monochromeShapes/MonochromeCube.cpp)
-target_include_directories(monochromeCube
+add_library(dodecahedron SHARED models/monochromeShapes/plutonic/Dodecahedron.cpp)
+target_include_directories(dodecahedron
         PRIVATE ${GLM_HOME})
-target_link_libraries(monochromeCube
+target_link_libraries(dodecahedron
         #        model
         shadersFactory
         materials
@@ -305,8 +305,9 @@ target_include_directories(scenes
 
 target_link_libraries(monochromaticShapesScene
         scenes
-        monochromeCube
+        dodecahedron
         orangePyramid
+        icosahedron
         logger
         EGL # Direct dependency
         GLESv2 # Direct dependency

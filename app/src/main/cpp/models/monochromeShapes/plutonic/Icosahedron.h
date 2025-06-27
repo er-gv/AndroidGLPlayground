@@ -4,6 +4,14 @@
 
 #pragma once
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+
+#include <cmath>
+#include "../../Model.h"
+#include "../../../logger.h"
+#include "../../../engine/shadersBuilder.h"
+
 
 class Icosahedron : public Model{
 private:

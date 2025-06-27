@@ -9,11 +9,11 @@
 #include <GLES2/gl2ext.h>
 
 #include <cmath>
-#include "../Model.h"
-#include "../../logger.h"
-#include "../../engine/shadersBuilder.h"
+#include "../../Model.h"
+#include "../../../logger.h"
+#include "../../../engine/shadersBuilder.h"
 
-class MonochromeCube : public Model{
+class Dodecahedron : public Model{
 private:
 
     GLuint VBO{0};
@@ -22,8 +22,8 @@ private:
 
 
 public:
-    MonochromeCube(const Scene&, Material* material);
-    ~MonochromeCube() override;
+    Dodecahedron(const Scene&, Material* material);
+    ~Dodecahedron() override;
     bool init() override;
     void updateState() override;
     void render() const override;

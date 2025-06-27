@@ -6,7 +6,7 @@
 #include "../logger.h"
 
 #include "../scenes/Scene.h"
-#include "../models/monochromeShapes/MonochromeCube.h"
+#include "../models/monochromeShapes/plutonic/Dodecahedron.h"
 #include "../models/monochromeShapes/OrangePyramid.h"
 #include "../models/monochromeShapes/plutonic/Icosahedron.h"
 
@@ -21,7 +21,7 @@ void addIcosahedronModel() {
     auto* ico = new Icosahedron(scene, monochromaticMaterial);
     ico->init();
 
-    ico->transform().translate(glm::vec3(0.350f, 0.5f, 0.0f)).scale(glm::vec3{0.35f});
+    ico->transform().translate(glm::vec3(-0.50f, 0.5f, 0.0f)).scale(glm::vec3{0.35f});
     ico->setPerFrameTransform(Transform().rotate(glm::two_pi<float>() / 200.f, glm::vec3{0.0f, 1.0f, 0.0f}));
 
     ico->material()->enable();
@@ -30,20 +30,20 @@ void addIcosahedronModel() {
     scene.addModel(ico);
 }
 
-void addCubeModel() {
+void addDodecahedronModel() {
     auto monochromaticMaterial {Material::materialBuilder(
             "shaders/monochrome_with_normals/vertex.glsl",
             "shaders/monochrome_with_normals/fragment.glsl")};
-    auto* cube = new MonochromeCube(scene, monochromaticMaterial);
-    cube->init();
+    auto* shape = new Dodecahedron(scene, monochromaticMaterial);
+    shape->init();
 
-    cube->transform().translate(glm::vec3(0.350f, 0.5f, 0.0f)).scale(glm::vec3{0.35f});
-    cube->setPerFrameTransform(Transform().rotate(glm::two_pi<float>() / 200.f, glm::vec3{0.0f, 1.0f, 0.0f}));
+    shape->transform().translate(glm::vec3(0.350f, 0.5f, 0.0f)).scale(glm::vec3{0.35f});
+    shape->setPerFrameTransform(Transform().rotate(glm::two_pi<float>() / 200.f, glm::vec3{0.0f, 1.0f, 0.0f}));
 
-    cube->material()->enable();
+    shape->material()->enable();
     //cube->material()->setProperty("uLightDirection", glm::vec3{0,0, -1});
-    cube->material()->disable();
-    scene.addModel(cube);
+    shape->material()->disable();
+    scene.addModel(shape);
 }
 
 void addPyramidModel() {
@@ -65,11 +65,11 @@ bool setupGraphics(int w, int h) {
     log_info(LOG_TAG,"@monochromaticColorsScene::setupGraphics(%d, %d)", w, h);
     scene.reset();
     scene.addDirectionalLight(DirectionalLight());
-    scene.setClearColor(glm::vec3(0.0f, 0.3f, 0.0f));
+    scene.setClearColor(glm::vec3(124.f, 96.f, 161.f)/255.f);
     scene.setViewPort(w, h);
     scene.setWaitBetweenFramesMillis(20);
     addPyramidModel();
-    addCubeModel();
+    addDodecahedronModel();
     addIcosahedronModel();
 
     return true;
